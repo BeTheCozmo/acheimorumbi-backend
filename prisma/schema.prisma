@@ -1,0 +1,242 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+
+  role        Role         @relation(fields: [roleId], references: [name])
+  roleId      String
+  permissions Permission[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  userEvents UserEvents[]
+}
+
+model UserEvents {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  user User @relation(fields: [userId], references: [id])
+  
+  action String
+  params String
+  body String
+  ip String
+  userAgent String
+  url String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Role {
+  name  String @id
+  users User[]
+  permissions Permission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  name  String @id
+  users User[]
+  roles Role[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Property {
+  id        Int    @id @default(autoincrement())
+  externalId String
+  name      String
+  cep       String
+  state     String
+  city      String
+  neighborhood String
+  street    String
+  number    String
+  complement String?
+
+  type PropertyType
+  block     String?
+  unity     String?
+  registryOffice String
+  registrationNumber String
+  area String
+  parkingSpaces String
+  suites String
+  floorLevel String
+
+  observations String @default("")
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  Contract Contract[]
+}
+
+enum PropertyType {
+  HOUSE
+  CONDOMINIUM
+}
+
+model Contract {
+  id Int @id @default(autoincrement())
+  propertyId Int 
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  ownerCode String @unique
+  acquirerCode String @unique
+
+  value Float
+
+  parties Party[]
+
+  status ContractStatus @default(PENDING)
+  type ContractType
+
+  attachedDocuments Document[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  checklistTitles ChecklistTitle[]
+
+  
+}
+
+enum ContractStatus {
+  PENDING
+  BLOCKED
+  IN_PROGRESS
+  SIGNED
+}
+
+enum ContractType {
+  SALE
+  LEASE
+}
+
+model Party {
+  id Int @id @default(autoincrement())
+  code String
+  type PartyType
+  data PartyInfo[]
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contractId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+}
+
+enum PartyType {
+  ACQUIRER
+  OWNER
+}
+
+model PartyInfo {
+  id Int @id @default(autoincrement())
+  partyId Int
+  party Party @relation(fields: [partyId], references: [id], onDelete: Cascade)
+
+  key String
+  value String
+}
+
+model Document {
+  id Int @id @default(autoincrement())
+  name String
+  url String
+  contractId Int
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PartyForm {
+  type PartyFormType @id
+
+
+  attributes PartyFormAttribute[]
+}
+
+enum PartyFormType {
+  SELLERS
+  BUYERS
+  LANDLORDS
+  TENANTS
+}
+
+model PartyFormAttribute {
+  id Int @id @default(autoincrement())
+  partyFormType PartyFormType
+  partyForm PartyForm @relation(fields: [partyFormType], references: [type], onDelete: Cascade)
+  
+  name String
+  type PartyFormAttributeType
+  title String
+  placeholder String
+  required Boolean
+  order Int
+  regexFormat String?
+  default String
+  options String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum PartyFormAttributeType {
+  number
+  float
+  text
+  radio
+  checkbox
+  tel
+  date
+  file
+}
+
+model ChecklistTitle {
+  id Int @id @default(autoincrement())
+  title String
+  instructions String?
+  checklistItems ChecklistItem[]
+
+  contractId Int
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChecklistItem {
+  id Int @id @default(autoincrement())
+  checklistTitleId Int
+  title String
+  instructions String?
+  checklistTitle ChecklistTitle @relation(fields: [checklistTitleId], references: [id], onDelete: Cascade)
+  order Int
+
+  checked Boolean
+  checkedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

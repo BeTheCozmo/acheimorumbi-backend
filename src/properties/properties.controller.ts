@@ -1,0 +1,51 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { PropertiesService } from './properties.service';
+import { CreatePropertyDto } from './dto/create-property.dto';
+import { UpdatePropertyDto } from './dto/update-property.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { PermissionsGuard } from 'src/permissions/permissions.guard';
+import { Validator } from 'src/permissions/permissions.decorator';
+import { permissionsValidator } from 'src/permissions/validator/permissions.validator';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
+@ApiTags('Properties')
+@Controller('properties')
+@UseGuards(AuthGuard, PermissionsGuard)
+export class PropertiesController {
+  constructor(private readonly propertiesService: PropertiesService) {}
+
+  @Post()
+  @ApiOperation({summary: 'Create a new property'})
+  @Validator(permissionsValidator({properties: 'id'}))
+  create(@Body() createPropertyDto: CreatePropertyDto) {
+    return this.propertiesService.create(createPropertyDto);
+  }
+
+  @Get()
+  @ApiOperation({summary: 'Get all properties'})
+  @Validator(permissionsValidator({properties: 'id'}))
+  findAll() {
+    return this.propertiesService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({summary: 'Get a property by id'})
+  @Validator(permissionsValidator({properties: 'id'}))
+  findOne(@Param('id') id: string) {
+    return this.propertiesService.findOne(+id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({summary: 'Update a property by id'})
+  @Validator(permissionsValidator({properties: 'id'}))
+  update(@Param('id') id: string, @Body() updatePropertyDto: UpdatePropertyDto) {
+    return this.propertiesService.update(+id, updatePropertyDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({summary: 'Delete a property by id'})
+  @Validator(permissionsValidator({properties: 'id'}))
+  remove(@Param('id') id: string) {
+    return this.propertiesService.remove(+id);
+  }
+}

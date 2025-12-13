@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bem-vindo ao Sistema</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    
+    .email-wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .header {
+      background: #000000;
+      padding: 50px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      background: #BB0002;
+      opacity: 0.1;
+      border-radius: 50%;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: #BB0002;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      font-weight: bold;
+      color: #ffffff;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header h1 {
+      color: #ffffff;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header p {
+      color: #e0e0e0;
+      font-size: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .content {
+      padding: 50px 40px;
+      background: #ffffff;
+    }
+    
+    .greeting {
+      font-size: 24px;
+      color: #000000;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .message {
+      color: #333333;
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+    
+    .features {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 30px;
+      margin: 30px 0;
+      border-left: 4px solid #BB0002;
+    }
+    
+    .features h3 {
+      color: #000000;
+      font-size: 18px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    
+    .feature-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: #BB0002;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 14px;
+      margin-right: 12px;
+      flex-shrink: 0;
+      font-weight: bold;
+    }
+    
+    .feature-text {
+      color: #333333;
+      font-size: 15px;
+    }
+    
+    .feature-text strong {
+      color: #000000;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: #BB0002;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 16px 40px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(187, 0, 2, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    
+    .cta-button:hover {
+      background: #990001;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(187, 0, 2, 0.4);
+    }
+    
+    .info-box {
+      background: #fafafa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+    
+    .info-box p {
+      color: #333333;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .info-box strong {
+      color: #BB0002;
+    }
+    
+    .footer {
+      background: #fafafa;
+      padding: 30px 40px;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .footer p {
+      color: #666666;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .footer strong {
+      color: #000000;
+    }
+    
+    .social-links {
+      margin-top: 20px;
+    }
+    
+    .social-links a {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      background: #e0e0e0;
+      border-radius: 50%;
+      margin: 0 5px;
+      text-decoration: none;
+      color: #333333;
+      font-size: 16px;
+      line-height: 36px;
+      transition: all 0.3s ease;
+    }
+    
+    .social-links a:hover {
+      background: #BB0002;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+    
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+      margin: 30px 0;
+    }
+    
+    .accent-bar {
+      height: 4px;
+      background: #BB0002;
+      width: 60px;
+      margin: 0 auto 30px;
+    }
+    
+    @media only screen and (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+      
+      .content {
+        padding: 30px 25px;
+      }
+      
+      .header h1 {
+        font-size: 26px;
+      }
+      
+      .greeting {
+        font-size: 20px;
+      }
+      
+      .features {
+        padding: 20px;
+      }
+      
+      .footer {
+        padding: 25px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">S</div>
+      <h1>Bem-vindo(a) ao Sistema!</h1>
+      <p>Sua jornada começa aqui</p>
+    </div>
+    
+    <!-- Content -->
+    <div class="content">
+      <div class="accent-bar"></div>
+      
+      <h2 class="greeting">Olá, {{name}}! 👋</h2>
+      
+      <p class="message">
+        É com grande satisfação que damos as boas-vindas a você! Sua conta foi criada com sucesso e você agora faz parte da nossa comunidade.
+      </p>
+      
+      <p class="message">
+        Estamos empolgados em tê-lo(a) conosco e queremos garantir que você tenha a melhor experiência possível. Nossa equipe está sempre disponível para ajudá-lo(a) no que precisar.
+      </p>
+      
+      <div class="features">
+        <h3>🚀 O que você pode fazer agora:</h3>
+        
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">
+            <strong>Explore o sistema</strong> e descubra todas as funcionalidades disponíveis para você
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">
+            <strong>Configure seu perfil</strong> para personalizar sua experiência
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">
+            <strong>Acesse nossa central de ajuda</strong> para aprender dicas e truques úteis
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">✓</div>
+          <div class="feature-text">
+            <strong>Entre em contato</strong> com nosso suporte caso tenha alguma dúvida
+          </div>
+        </div>
+      </div>
+      
+      <center>
+        <a href="https://seusite.com/login" class="cta-button">Acessar o Sistema</a>
+      </center>
+      
+      <div class="info-box">
+        <p>
+          <strong>📧 Seu email de acesso:</strong> {{email}}<br>
+          Guarde este email em um lugar seguro para futuras referências.
+        </p>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p class="message" style="font-size: 14px; color: #666666;">
+        Se você não solicitou esta conta, por favor ignore este email ou entre em contato com nossa equipe de suporte.
+      </p>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+      <p><strong>Precisa de ajuda?</strong></p>
+      <p>Nossa equipe está disponível 24/7 para auxiliá-lo(a)</p>
+      <p>📧 suporte@seusite.com | 📞 (11) 1234-5678</p>
+      
+      <div class="social-links">
+        <a href="#">f</a>
+        <a href="#">in</a>
+        <a href="#">𝕏</a>
+        <a href="#">ig</a>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p style="font-size: 12px; margin-top: 20px;">
+        © 2025 Seu Sistema. Todos os direitos reservados.<br>
+        Você está recebendo este email porque uma conta foi criada com este endereço.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
