@@ -1,0 +1,8 @@
+export enum PaymentInstallmentsType {
+  SIGNAL = 'SIGNAL',
+  DOCUMENTATION = 'DOCUMENTATION',
+  SIGNATURE = 'SIGNATURE',
+  FGTS = 'FGTS',
+  FINANCEMENT = 'FINANCEMENT',
+  COMISSION = 'COMISSION'
+};

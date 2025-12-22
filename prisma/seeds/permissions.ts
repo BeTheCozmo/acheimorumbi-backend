@@ -71,6 +71,7 @@ export const masterPermissions = [
 export const commonUserPermissions = [
   "properties:*:read",
   "user-events:*:read",
+  "auth:*:update_password"
 ];
 
 

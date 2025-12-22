@@ -32,11 +32,17 @@ export class PartyFormsService {
 
   async findOneByCode(code: string) {
     const contract = await this.contractsService.getContractByCode(code);
-    const partyFormType = this.getPartyFormTypeByCode(contract, code);
-    return await this.partyFormsRepository.findOne(partyFormType);
+    const partyFormType = this.getPartyFormTypeByCode(contract as unknown as ContractDto, code);
+    const partyFormAndAttributes = await this.partyFormsRepository.findOne(partyFormType);
+    const property = await this.contractsService.getPropertyByContractId(contract.id);
+    return {
+      ...partyFormAndAttributes,
+      property,
+      contract
+    }
   }
 
-  getPartyFormTypeByCode(contract: ContractDto , code: string): PartyFormType {
+  getPartyFormTypeByCode(contract: ContractDto, code: string): PartyFormType {
     let isAcquirer = false;
     if (contract.acquirerCode === code) isAcquirer = true;
 

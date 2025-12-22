@@ -34,6 +34,13 @@ export class UsersService {
       ...createUserDto,
       password: await bcrypt.hash(createUserDto.password, saltRounds),
       roleId: RolesEnum.USER,
+      bankCode: null,
+      agency: null,
+      agencyDigit: null,
+      accountNumber: null,
+      accountDigit: null,
+      accountType: null,
+      bankName: null,
     });
     if (!createdUser) throw new HttpException(`Erro ao criar usuário`, HttpStatus.INTERNAL_SERVER_ERROR);
     createdUser.password = undefined as unknown as string;
@@ -42,7 +49,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     if (await this.alreadyExistsByEmail(createUserDto.email))
-      throw new HttpException(`user com email ${createUserDto.email} já existe`, HttpStatus.CONFLICT);
+      throw new HttpException(`usuario com email ${createUserDto.email} já existe`, HttpStatus.CONFLICT);
 
     const saltRounds = parseInt(this.configService.get<string>('BCRYPT_SALT_ROUNDS') || '13', 10);
     const role = await this.rolesService.findOne(createUserDto.roleId);
@@ -54,17 +61,23 @@ export class UsersService {
       roleId: RolesEnum.USER,
     });
     if (!createdUser) throw new HttpException(`Erro ao criar usuário`, HttpStatus.INTERNAL_SERVER_ERROR);
-    
+
     try {
-      await this.notifyUserCreated(createdUser);
+      await this.notifyUserCreated({
+        name: createdUser.name,
+        email: createdUser.email,
+        password: password,
+      });
     } catch (error) {
       console.log({error});
     }
-    
+
     createdUser.password = undefined as unknown as string;
     return createdUser;
   }
-  private notifyUserCreated(data: {name: string, email: string, password: string}) { this.usersMailer.notifyUserCreated(data); }
+  private async notifyUserCreated(data: {name: string, email: string, password: string}) {
+    return await this.usersMailer.notifyUserCreated(data);
+  }
 
   async findAll() {
     const users = await this.userRepository.findAll();
@@ -89,18 +102,31 @@ export class UsersService {
     return user;
   }
 
+  findOneWithPassword(id: number) {
+    return this.userRepository.findOne(id);
+  }
+
   async alreadyExistsByEmail(email: string) { return !!await this.findByEmail(email); }
   async findByEmail(email: string) { return await this.userRepository.findByEmail(email); }
   update(id: number, updateCustomerDto: UpdateUserDto) { return this.userRepository.update(id, updateCustomerDto); }
   remove(id: number) { return this.userRepository.remove(id); }
 
   async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto) {
-    const user = await this.findOne(userId);
+    const user = await this.findOneWithPassword(userId);
     if(!user) throw new HttpException(`usuário ${userId} não encontrado`, HttpStatus.NOT_FOUND);
 
     const isValidPassword = await bcrypt.compare(updatePasswordDto.oldPassword, user.password);
     if(!isValidPassword) throw new HttpException('senha antiga não corresponde com a atual', HttpStatus.UNAUTHORIZED);
-    return this.userRepository.updatePassword(userId, updatePasswordDto.newPassword);
+    const saltRounds = parseInt(this.configService.get<string>('BCRYPT_SALT_ROUNDS') || '13', 10);
+    return this.userRepository.updatePassword(userId, await bcrypt.hash(updatePasswordDto.newPassword, saltRounds));
+  }
+
+  async updatePasswordWithoutOldPassword(userId: number, newPassword: string) {
+    const user = await this.findOneWithPassword(userId);
+    if(!user) throw new HttpException(`usuário ${userId} não encontrado`, HttpStatus.NOT_FOUND);
+
+    const saltRounds = parseInt(this.configService.get<string>('BCRYPT_SALT_ROUNDS') || '13', 10);
+    return this.userRepository.updatePassword(userId, await bcrypt.hash(newPassword, saltRounds));
   }
 
   async changeRoleOfUser(id: number, roleId: string) {

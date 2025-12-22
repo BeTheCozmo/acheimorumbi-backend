@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PartiesService } from './parties.service';
 import { PartiesController } from './parties.controller';
 import { UsersModule } from '@modules/users/users.module';
@@ -9,6 +9,7 @@ import { ContractsModule } from '@modules/contracts/contracts.module';
 import { UserEventsModule } from '@modules/user-events/user-events.module';
 import { UserEventsMiddleware } from '@modules/user-events/user-events.middleware';
 import { PartiesSubmissionController } from './parties-submission.controller';
+import { PropertiesModule } from '@modules/properties/properties.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { PartiesSubmissionController } from './parties-submission.controller';
     PermissionsModule,
     UserEventsModule,
     PrismaModule,
-    ContractsModule,
+    forwardRef(() => ContractsModule),
+    PropertiesModule,
   ],
   controllers: [PartiesController, PartiesSubmissionController],
   providers: [PartiesService, PartiesRepository],

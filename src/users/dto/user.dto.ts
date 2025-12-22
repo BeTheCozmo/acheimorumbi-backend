@@ -1,3 +1,4 @@
+import { IsOptional, IsString } from "@nestjs/class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { RoleDto } from "src/roles/dto/role.dto";
 
@@ -10,4 +11,26 @@ export class UserDto {
   email: string;
   @ApiProperty({ description: 'The role id of the user', type: RoleDto })
   role: RoleDto;
+
+  @IsOptional()
+  @IsString()
+  bankName?: string;
+  @IsOptional()
+  @IsString()
+  bankCode?: string;
+  @IsOptional()
+  @IsString()
+  agency?: string;
+  @IsOptional()
+  @IsString()
+  agencyDigit?: string;
+  @IsOptional()
+  @IsString()
+  accountNumber?: string;
+  @IsOptional()
+  @IsString()
+  accountDigit?: string;
+  @IsOptional()
+  @IsString()
+  accountType?: string;
 }

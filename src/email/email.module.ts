@@ -20,6 +20,7 @@ import { EmailConfig } from './interfaces/email-config.interface';
             pass: configService.get<string>('SMTP_PASSWORD', ''),
           },
         };
+        // DEBUG: Verificar se a senha está sendo lida corretamente
         return new EmailService(emailConfig);
       },
       inject: [ConfigService],

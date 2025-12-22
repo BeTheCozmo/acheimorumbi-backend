@@ -58,6 +58,6 @@ export class PartiesController {
   @UseGuards(AuthGuard, PermissionsGuard)
   @Validator(permissionsValidator({contracts: "id", parties: "pid"}))
   getSubmited(@Param('pid') id: string) {
-    return this.partiesService.getSubmited(+id);
+    // return this.partiesService.getSubmited(+id);
   }
 }

@@ -5,6 +5,7 @@ export async function seedProperties(prisma: PrismaClient) {
     data: {
       area: "100",
       complement: "Complemento",
+      condominium: "Águas Diamantinas",
       block: "Bloco A",
       unity: "Unidade 1",
       observations: "Observações",
@@ -22,6 +23,13 @@ export async function seedProperties(prisma: PrismaClient) {
       registryOffice: "Registro de Imóveis de São Paulo",
       suites: "2",
       type: "CONDOMINIUM",
+      acquiredDate: new Date(),
+      acquiredRegistry: "registroAdquirido",
+      status: "PAID_OFF",
+      statusDate: new Date(),
+      statusRegistry: "RegistroDoStatus",
+      taxPayerNumber: "123 456 789",
+      registeredWithAnotherOwner: true
     },
   });
 }

@@ -16,35 +16,35 @@ export class PropertiesController {
 
   @Post()
   @ApiOperation({summary: 'Create a new property'})
-  @Validator(permissionsValidator({properties: 'id'}))
+  @Validator(permissionsValidator({properties: 'id'}, ['create']))
   create(@Body() createPropertyDto: CreatePropertyDto) {
     return this.propertiesService.create(createPropertyDto);
   }
 
   @Get()
   @ApiOperation({summary: 'Get all properties'})
-  @Validator(permissionsValidator({properties: 'id'}))
+  @Validator(permissionsValidator({properties: 'id'}, ['read']))
   findAll() {
     return this.propertiesService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({summary: 'Get a property by id'})
-  @Validator(permissionsValidator({properties: 'id'}))
+  @Validator(permissionsValidator({properties: 'id'}, ['read']))
   findOne(@Param('id') id: string) {
     return this.propertiesService.findOne(+id);
   }
 
   @Patch(':id')
   @ApiOperation({summary: 'Update a property by id'})
-  @Validator(permissionsValidator({properties: 'id'}))
+  @Validator(permissionsValidator({properties: 'id'}, ['update']))
   update(@Param('id') id: string, @Body() updatePropertyDto: UpdatePropertyDto) {
     return this.propertiesService.update(+id, updatePropertyDto);
   }
 
   @Delete(':id')
   @ApiOperation({summary: 'Delete a property by id'})
-  @Validator(permissionsValidator({properties: 'id'}))
+  @Validator(permissionsValidator({properties: 'id'}, ['delete']))
   remove(@Param('id') id: string) {
     return this.propertiesService.remove(+id);
   }

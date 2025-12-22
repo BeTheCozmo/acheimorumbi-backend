@@ -9,6 +9,8 @@ import { PermissionsModule } from 'src/permissions/permissions.module';
 import { AuthGuard } from './auth.guard';
 import { AuthMail } from './auth.mail';
 import { EmailModule } from '@modules/email/email.module';
+import { CodeGeneratorModule } from '@modules/code-generator/code-generator.module';
+import { ForgotAccessModule } from '@modules/forgot-access/forgot-access.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { EmailModule } from '@modules/email/email.module';
     RolesModule,
     PermissionsModule,
     EmailModule,
+    CodeGeneratorModule,
+    ForgotAccessModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, AuthMail],

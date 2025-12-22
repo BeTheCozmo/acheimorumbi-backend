@@ -17,7 +17,6 @@ export class ChecklistTitlesService {
     const titles = this.getTitlesAndItems(contractId);
     for(const title of titles) {
       const createdTitle = await this.create(title);
-      console.log({createdTitle});
     }
   }
 

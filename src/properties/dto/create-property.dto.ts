@@ -1,6 +1,8 @@
-import { IsOptional, IsString } from "@nestjs/class-validator";
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
 import { PropertyType } from "../enums/property-type";
 import { ApiProperty } from "@nestjs/swagger";
+import { $Enums, Property } from "@prisma/client";
+import { PropertyStatus } from "../enums/property-status";
 
 export class CreatePropertyDto {
   @IsString()
@@ -47,13 +49,28 @@ export class CreatePropertyDto {
 
   @IsString()
   @IsOptional()
-  @ApiProperty({description: 'Property block'})
+  @ApiProperty({description: 'Condominium block'})
   block?: string;
-
+  
   @IsString()
   @IsOptional()
-  @ApiProperty({description: 'Property unity'})
+  @ApiProperty({description: 'Condominium unity'})
   unity?: string;
+  
+  @IsString()
+  @IsOptional()
+  @ApiProperty({description: 'Condominium name'})
+  condominium?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({description: 'Condominium value'})
+  condominiumValue?: number;
+  
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({description: 'IPTU value'})
+  iptuValue?: number;
 
   @IsString()
   @ApiProperty({description: 'Property registry office'})
@@ -82,4 +99,67 @@ export class CreatePropertyDto {
   @IsString()
   @ApiProperty({description: 'Property observations'})
   observations: string;
+
+  @IsEnum(PropertyStatus)
+  @ApiProperty()
+  status: PropertyStatus;
+
+  @IsDateString()
+  @ApiProperty()
+  statusDate: Date;
+
+  @IsString()
+  @ApiProperty()
+  statusRegistry: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  alienatedBank: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  alienationRegistry: string;
+
+  @IsOptional()
+  @IsString()
+  registryOfficeCity?: string;
+  
+  @IsBoolean()
+  @ApiProperty()
+  registeredWithAnotherOwner: boolean;
+  
+  @IsDateString()
+  @ApiProperty()
+  acquiredDate: Date;
+  
+  @IsString()
+  @ApiProperty()
+  acquiredRegistry: string;
+  
+  @IsString()
+  @ApiProperty()
+  taxPayerNumber: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  electricityRegistration?: string;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  waterRegistration?: string;
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  isWaterIndividual: boolean;
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  gasRegistration?: string;
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty()
+  isGasIndividual: boolean;
 }

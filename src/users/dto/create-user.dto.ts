@@ -8,7 +8,29 @@ export class CreateUserDto {
   @IsString()
   @ApiProperty({ description: 'The email of the user' })
   email: string;
-  @IsNumber()
+  @IsString()
   @ApiProperty({ description: 'The role id of the user' })
   roleId: string;
+
+  @IsOptional()
+  @IsString()
+  bankName: string;
+  @IsOptional()
+  @IsString()
+  bankCode: string;
+  @IsOptional()
+  @IsString()
+  agency: string;
+  @IsOptional()
+  @IsString()
+  agencyDigit: string;
+  @IsOptional()
+  @IsString()
+  accountNumber: string;
+  @IsOptional()
+  @IsString()
+  accountDigit: string;
+  @IsOptional()
+  @IsString()
+  accountType: string;
 }

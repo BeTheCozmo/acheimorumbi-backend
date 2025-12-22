@@ -66,6 +66,17 @@ export class PartiesRepository {
     }
   }
 
+  async findManyByCode(code: string) {
+    try {
+      return await this.prismaService.party.findMany({
+        where: {code},
+        include: {data: true}
+      })
+    } catch (error) {
+      
+    }
+  }
+
   async update(id: number, updatePartyDto: Prisma.PartyUpdateArgs['data']) {
     try {
       return await this.prismaService.party.update({
@@ -97,6 +108,9 @@ export class PartiesRepository {
     return await this.prismaService.party.findMany({
       where: {
         contractId
+      },
+      include: {
+        data: true
       }
     });
   }

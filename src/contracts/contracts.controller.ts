@@ -59,8 +59,20 @@ export class ContractsController {
   @ApiOperation({ summary: "Get contract file" })
   @Validator(permissionsValidator({contracts: "id"}, ["read"]))
   async getContractFile(@Param('id') id: string) {
+    console.log({id});
     const contract = await this.contractsService.findOne(+id);
+    console.log({contract});
     const fileBuffer = await this.contractsService.generateFile(contract);
     return new StreamableFile(fileBuffer, {disposition: 'attachment'})
+  }
+
+  @Get(":id/:code/attributes")
+  @ApiOperation({ summary: "Get Party Attributes By Code" })
+  @Validator(permissionsValidator({contracts: "id"}, ["read"]))
+  getContractPartyAttributes(
+    @Param('id') id: string,
+    @Param('code') code: string,
+  ) {
+    return this.contractsService.getPartyAttributes(code);
   }
 }

@@ -10,7 +10,7 @@ export default class PermissionsValidator {
   constructor(systemsAndParams: {[key: string]: string}, actions: string[] = []) {
     this.systemsAndParams = systemsAndParams;
     this.actions = Array.from(
-      new Set([...actions, "create", "read", "update", "delete"])
+      new Set([...actions,])
     );
 
     this.permissionsEvaluator = new PermissionsEvaluator(new PermissionsTokenizer());
@@ -20,10 +20,11 @@ export default class PermissionsValidator {
     if(!this.actions.length) return false;
 
     const systems = Object.keys(this.systemsAndParams);
-    const ids = 
+    let ids =
     paramsIds.length < systems.length
     ? [...paramsIds, ...Array(systems.length - paramsIds.length).fill("*")]
     : paramsIds;
+    if (ids.length > systems.length) ids = ids.slice(0, systems.length);
 
     return this.actions.every(action => 
       this.permissionsEvaluator.evaluate(

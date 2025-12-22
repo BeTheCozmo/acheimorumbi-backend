@@ -19,6 +19,8 @@ import { ChecklistItemsModule } from './checklist-items/checklist-items.module';
 import { PartyFormsModule } from './party-forms/party-forms.module';
 import { UserEventsModule } from './user-events/user-events.module';
 import { ContractGeneratorModule } from './contract-generator/contract-generator.module';
+import { PaymentInstallmentsModule } from './payment-installments/payment-installments.module';
+import { ForgotAccessModule } from './forgot-access/forgot-access.module';
 
 @Module({
   imports: [
@@ -62,6 +64,8 @@ import { ContractGeneratorModule } from './contract-generator/contract-generator
     PartyFormsModule,
     UserEventsModule,
     ContractGeneratorModule,
+    PaymentInstallmentsModule,
+    ForgotAccessModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

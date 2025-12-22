@@ -18,9 +18,10 @@ export class ContractsRepository {
           status: ContractStatus.PENDING,
           acquirerCode: createContractDto.acquirerCode,
           ownerCode: createContractDto.ownerCode,
-          value: createContractDto.value
+          value: createContractDto.value,
+          realtors: createContractDto.realtors ? {connect: createContractDto?.realtors.map(id => ({id}))} : undefined,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});
@@ -30,7 +31,9 @@ export class ContractsRepository {
 
   async findAll() {
     try {
-      return await this.prismaService.contract.findMany();
+      return await this.prismaService.contract.findMany({
+        include: {realtors: true}
+      });
     } catch (error) {
       console.log({error});
       return [];
@@ -43,7 +46,7 @@ export class ContractsRepository {
         where: {
           id: id,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});
@@ -57,7 +60,7 @@ export class ContractsRepository {
         where: {
           acquirerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});
@@ -71,7 +74,7 @@ export class ContractsRepository {
         where: {
           ownerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});
@@ -87,8 +90,9 @@ export class ContractsRepository {
         },
         data: {
           ...updateContractDto,
+          realtors: updateContractDto.realtors ? {set: updateContractDto?.realtors.map(id => ({id}))} : undefined,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});
@@ -102,7 +106,7 @@ export class ContractsRepository {
         where: {
           id: id,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
     } catch (error) {
       console.log({error});

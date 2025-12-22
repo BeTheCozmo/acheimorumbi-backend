@@ -17,16 +17,36 @@ model User {
   roleId      String
   permissions Permission[]
 
+  bankName String? @default("")
+  bankCode String? @default("")
+  agency String? @default("")
+  agencyDigit String? @default("")
+  accountNumber String? @default("")
+  accountDigit String? @default("")
+  accountType String? @default("")
+
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
+  forgotAccessCodes ForgotAccessCode[]
   userEvents UserEvents[]
+  contracts Contract[]
+}
+
+model ForgotAccessCode {
+  code String @id
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt DateTime?
+  used Boolean @default(false)
 }
 
 model UserEvents {
   id        Int    @id @default(autoincrement())
   userId    Int
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   action String
   params String
@@ -67,17 +87,42 @@ model Property {
   neighborhood String
   street    String
   number    String
-  complement String?
+  complement String? @default("")
+
+  condominium String? @default("")
+  block     String? @default("")
+  unity     String? @default("")
+  condominiumValue Int @default(0)
+  iptuValue Int @default(0)
 
   type PropertyType
-  block     String?
-  unity     String?
+  status PropertyStatus
+  statusDate DateTime
+  statusRegistry String
+
+  alienatedBank String? @default("")
+  alienationRegistry String? @default("")
+
   registryOffice String
+  registryOfficeCity String @default("São Paulo")
   registrationNumber String
+  registeredWithAnotherOwner Boolean @default(false)
+
+  acquiredDate DateTime
+  acquiredRegistry String
+
+  taxPayerNumber String
+
   area String
   parkingSpaces String
   suites String
   floorLevel String
+
+  electricityRegistration String? @default("")
+  waterRegistration String? @default("")
+  isWaterIndividual Boolean @default(true)
+  gasRegistration String? @default("")
+  isGasIndividual Boolean @default(true)
 
   observations String @default("")
   createdAt DateTime? @default(now())
@@ -91,6 +136,11 @@ enum PropertyType {
   CONDOMINIUM
 }
 
+enum PropertyStatus {
+  FINANCED
+  PAID_OFF
+}
+
 model Contract {
   id Int @id @default(autoincrement())
   propertyId Int 
@@ -102,18 +152,33 @@ model Contract {
   value Float
 
   parties Party[]
+  realtors User[]
 
   status ContractStatus @default(PENDING)
   type ContractType
 
   attachedDocuments Document[]
 
+  guaranteeType String? @default("")
+  leaseStartDate DateTime?
+  leaseEndDate DateTime?
+  rentDueDay Int?
+
+  bankName String? @default("")
+  bankCode String? @default("")
+  agency String? @default("")
+  agencyDigit String? @default("")
+  accountNumber String? @default("")
+  accountDigit String? @default("")
+  accountType String? @default("")
+
+  whoWillPayComission PartyType @default(OWNER)
+
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
+  paymentInstallments PaymentInstallments[]
   checklistTitles ChecklistTitle[]
-
-  
 }
 
 enum ContractStatus {
@@ -128,14 +193,46 @@ enum ContractType {
   LEASE
 }
 
+model PaymentInstallments {
+  id Int @id @default(autoincrement())
+  type PaymentInstallmentsType
+  contractId Int
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  value Float
+  dueDate DateTime
+  paid Boolean @default(false)
+  paidAt DateTime?
+
+  bankName String? @default("")
+  bankCode String? @default("")
+  agency String? @default("")
+  agencyDigit String? @default("")
+  accountNumber String? @default("")
+  accountDigit String? @default("")
+  accountType String? @default("")
+
+  @@index([type, contractId])
+}
+
+enum PaymentInstallmentsType {
+  SIGNAL
+  DOCUMENTATION
+  SIGNATURE
+  FGTS
+  FINANCEMENT
+  COMISSION
+}
+
+
 model Party {
   id Int @id @default(autoincrement())
   code String
   type PartyType
   data PartyInfo[]
 
-  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
   contractId Int
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

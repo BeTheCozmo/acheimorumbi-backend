@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
 import { ContractsController } from './contracts.controller';
 import { PrismaModule } from '@modules/prisma/prisma.module';
@@ -12,6 +12,8 @@ import { UserEventsModule } from '@modules/user-events/user-events.module';
 import { PropertiesModule } from '@modules/properties/properties.module';
 import { PartiesModule } from '@modules/parties/parties.module';
 import { ContractContextService } from './contract-context.service';
+import { ContractGeneratorModule } from '@modules/contract-generator/contract-generator.module';
+import { PaymentInstallmentsModule } from '@modules/payment-installments/payment-installments.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { ContractContextService } from './contract-context.service';
     ChecklistTitlesModule,
     UserEventsModule,
     PropertiesModule,
-    PartiesModule,
+    forwardRef(() => PartiesModule),
+    ContractGeneratorModule,
+    PaymentInstallmentsModule,
   ],
   controllers: [ContractsController],
   providers: [ContractsService, ContractsRepository, ContractContextService],

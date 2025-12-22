@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -11,6 +11,8 @@ import { UsersService } from '@modules/users/users.service';
 import { UserDto } from './dto/user.dto';
 import { AuthGuard } from './auth.guard';
 import { PermissionsGuard } from '@modules/permissions/permissions.guard';
+import { ForgotPasswordRequestDto } from './dto/forgot-password-request.dto';
+import { UpdatePasswordWithCodeDto } from './dto/update-password-with-code.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -53,7 +55,7 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @Patch()
+  @Patch('update-password')
   @ApiOperation({ summary: 'Update user password' })
   @ApiResponse({ status: 200, description: 'User password updated successfully', type: UserDto })
   @UseGuards(AuthGuard, PermissionsGuard)
@@ -61,5 +63,21 @@ export class AuthController {
   updatePassword(@Body() updatePasswordDto: UpdatePasswordDto, @Request() req) {
     const userId = req.user.id;
     return this.usersService.updatePassword(userId, updatePasswordDto);
+  }
+
+  @Post('forgot-password-request')
+  @ApiOperation({ summary: 'Forgot password request' })
+  forgotPasswordRequest(@Body() forgotPasswordRequestDto: ForgotPasswordRequestDto) {
+    return this.authService.forgotPasswordRequest(forgotPasswordRequestDto);
+  }
+
+  @Get('forgot-password-verify/:code')
+  forgotPasswordVerify(@Param('code') code: string) {
+    return this.authService.forgotPasswordVerifyCode(code);
+  }
+
+  @Post('update-password-with-code')
+  updatePasswordWithCode(@Body() updatePasswordWithCodeDto: UpdatePasswordWithCodeDto) {
+    return this.authService.updatePasswordWithCode(updatePasswordWithCodeDto);
   }
 }
