@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -9,11 +10,18 @@ export class UsersRepository {
   constructor(
     private readonly prismaService: PrismaService,
   ) { }
-  create(createUserDto: Omit<User, 'id' | 'createdAt' | 'updatedAt'>) {
+  create(
+    createUserDto: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+  ) {
     try {
       return this.prismaService.user.create(
         {
-          data: createUserDto,
+          data: {
+            ...createUserDto,
+            configurations: {
+              createMany: {data: [{name: 'porcentagemCaptacao', value: "5"}, {name: 'porcentagemCorretagem', value: "40"}]}
+            }
+          },
           include: {
             permissions: true,
             role: { include: { permissions: true } }
@@ -28,7 +36,11 @@ export class UsersRepository {
   async findAll() {
     try {
       return await this.prismaService.user.findMany({
-        include: { permissions: true, role: { include: { permissions: true } } }
+        include: {
+          permissions: true,
+          configurations: true,
+          role: { include: { permissions: true }, },
+        }
       });
     } catch (error) {
       return [];
@@ -40,7 +52,11 @@ export class UsersRepository {
       return this.prismaService.user.findUnique(
         {
           where: { id },
-          include: { permissions: true, role: { include: { permissions: true } } }
+          include: {
+            permissions: true,
+            role: { include: { permissions: true } },
+            configurations: true
+          }
         }
       );
     } catch (error) {
@@ -60,7 +76,7 @@ export class UsersRepository {
     }
   }
 
-  async update(id: number, updateCustomerDto: UpdateUserDto) {
+  async update(id: number, updateCustomerDto: Partial<User>) {
     try {
       return await this.prismaService.user.update({
         where: { id },

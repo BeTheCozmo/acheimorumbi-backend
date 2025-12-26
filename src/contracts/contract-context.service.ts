@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { PaymentInstallmentsType } from "./dto/payment-installments.dto";
 
 @Injectable()
 export class ContractContextService {
@@ -19,6 +20,10 @@ export class ContractContextService {
     ctx = this.buildAcquirersAndOwnersQuantityIndicator(ctx, acquirers, owners);
     ctx = this.buildPropertyPaidOffConditions(ctx, property);
     ctx = this.buildAcquirersWillFinance(ctx, acquirers);
+    ctx = this.buildInstallments(ctx, contract);
+    ctx = this.buildDifferenceInMonthsOfLease(ctx, contract);
+
+    console.log({ctx})
     return ctx;
   }
 
@@ -127,6 +132,42 @@ export class ContractContextService {
 
   private buildAcquirersWillFinance(ctx: {[key: string]: any}, acquirers: {[key: string]: any}[]) {
     ctx.adquirentesVaoFinanciar = acquirers.some(acquirer => acquirer?.vaiFinanciar);
+    return ctx;
+  }
+
+  private buildInstallments(ctx: {[key: string]: any}, contract: {[key: string]: any}) {
+    if (!contract?.paymentInstallments) return ctx;
+
+    console.log({paymentInstallments: contract.paymentInstallments})
+
+    ctx.parcelaSinal = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNAL) || undefined;
+    if(ctx.parcelaSinal) ctx.parcelaSinal = ctx.parcelaSinal[0];
+
+    ctx.parcelaDocumentacao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.DOCUMENTATION) || undefined;
+    if(ctx.parcelaDocumentacao) ctx.parcelaDocumentacao = ctx.parcelaDocumentacao[0];
+    
+    ctx.parcelaAssinatura = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNATURE) || undefined;
+    if(ctx.parcelaAssinatura) ctx.parcelaAssinatura = ctx.parcelaAssinatura[0];
+    
+    ctx.parcelaFgts = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FGTS) || undefined;
+    if(ctx.parcelaFgts) ctx.parcelaFgts = ctx.parcelaFgts[0];
+    
+    ctx.parcelaFinanciamento = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FINANCEMENT) || undefined;
+    if(ctx.parcelaFinanciamento) ctx.parcelaFinanciamento = ctx.parcelaFinanciamento[0];
+    
+    ctx.parcelaComissao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.COMISSION) || undefined;
+    if(ctx.parcelaComissao) ctx.parcelaComissao = ctx.parcelaComissao[0];
+    
+    return ctx;
+  }
+
+  private buildDifferenceInMonthsOfLease(ctx: {[key: string]: any}, contract: {[key: string]: any}) {
+    if (!((contract?.type == "LEASE") && contract?.leaseStartDate && contract?.leaseEndDate)) return ctx;
+
+    const diffInMs = contract.leaseEndDate.getTime() - contract.leaseStartDate.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    ctx.differenceInMonthsOfLease = diffInDays / 30;
+
     return ctx;
   }
 }

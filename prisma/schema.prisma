@@ -29,6 +29,7 @@ model User {
   updatedAt DateTime? @updatedAt
 
   forgotAccessCodes ForgotAccessCode[]
+  configurations Configuration[]
   userEvents UserEvents[]
   contracts Contract[]
 }
@@ -41,6 +42,17 @@ model ForgotAccessCode {
   expiresAt DateTime
   usedAt DateTime?
   used Boolean @default(false)
+}
+
+model Configuration {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name String
+  value String
+
+  @@index([name])
 }
 
 model UserEvents {
@@ -92,8 +104,8 @@ model Property {
   condominium String? @default("")
   block     String? @default("")
   unity     String? @default("")
-  condominiumValue Int @default(0)
-  iptuValue Int @default(0)
+  condominiumValue Int? @default(0)
+  iptuValue Int? @default(0)
 
   type PropertyType
   status PropertyStatus
@@ -115,8 +127,7 @@ model Property {
 
   area String
   parkingSpaces String
-  suites String
-  floorLevel String
+  floorLevel String?
 
   electricityRegistration String? @default("")
   waterRegistration String? @default("")
@@ -124,7 +135,7 @@ model Property {
   gasRegistration String? @default("")
   isGasIndividual Boolean @default(true)
 
-  observations String @default("")
+  observations String? @default("")
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -133,7 +144,8 @@ model Property {
 
 enum PropertyType {
   HOUSE
-  CONDOMINIUM
+  APARTMENT
+  CONDOMINIUM_HOUSE
 }
 
 enum PropertyStatus {
@@ -179,6 +191,8 @@ model Contract {
 
   paymentInstallments PaymentInstallments[]
   checklistTitles ChecklistTitle[]
+
+  witnesses Witness[]
 }
 
 enum ContractStatus {
@@ -336,4 +350,13 @@ model ChecklistItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Witness {
+  id Int @id @default(autoincrement())
+  name String
+  rg String
+  signature String? @default("")
+
+  contracts Contract[]
 }

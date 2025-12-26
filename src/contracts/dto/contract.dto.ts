@@ -2,6 +2,8 @@ import { $Enums, Contract } from "@prisma/client";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
 import { UserDto } from "@modules/users/dto/user.dto";
+import { PaymentInstallmentsDto } from "./payment-installments.dto";
+import { Type } from "class-transformer";
 
 export class ContractDto {
   @ApiProperty({ description: "ID do contrato", example: 1 })
@@ -98,4 +100,9 @@ export class ContractDto {
   @ApiProperty({ description: "Data de atualização do contrato" })
   @IsDateString()
   updatedAt: Date;
+
+  @ApiProperty({ description: "Instalações do contrato" })
+  @IsArray()
+  @Type(() => PaymentInstallmentsDto)
+  paymentInstallments: PaymentInstallmentsDto[];
 }

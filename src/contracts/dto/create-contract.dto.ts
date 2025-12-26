@@ -3,6 +3,7 @@ import { ContractType } from "../enums/contract-type";
 import { IsArray, IsDate, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, IsString } from "@nestjs/class-validator";
 import { ContractStatus } from "../enums/contract-status";
 import { Type } from "class-transformer";
+import { PaymentInstallmentsDto } from "./payment-installments.dto";
 
 export class CreateContractDto {
   @ApiProperty()
@@ -85,4 +86,10 @@ export class CreateContractDto {
   @IsOptional()
   @IsString()
   accountType?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @Type(() => PaymentInstallmentsDto)
+  paymentInstallments: PaymentInstallmentsDto[];
 }

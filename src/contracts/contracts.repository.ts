@@ -20,6 +20,7 @@ export class ContractsRepository {
           ownerCode: createContractDto.ownerCode,
           value: createContractDto.value,
           realtors: createContractDto.realtors ? {connect: createContractDto?.realtors.map(id => ({id}))} : undefined,
+          paymentInstallments: createContractDto.paymentInstallments ? {create: createContractDto.paymentInstallments} : undefined,
         },
         include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
       });
@@ -32,7 +33,10 @@ export class ContractsRepository {
   async findAll() {
     try {
       return await this.prismaService.contract.findMany({
-        include: {realtors: true}
+        include: {
+          realtors: true,
+          paymentInstallments: true,
+        }
       });
     } catch (error) {
       console.log({error});
@@ -46,7 +50,11 @@ export class ContractsRepository {
         where: {
           id: id,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {
+          checklistTitles: {include: {checklistItems: true}}, 
+          realtors: {omit: {password: true}},
+          paymentInstallments: true,
+        }
       });
     } catch (error) {
       console.log({error});
@@ -84,6 +92,13 @@ export class ContractsRepository {
 
   async update(id: number, updateContractDto: UpdateContractDto) {
     try {
+      // Separar installments existentes (com id) dos novos (sem id)
+      const existingInstallments = updateContractDto.paymentInstallments?.filter(p => p.id) || [];
+      const newInstallments = updateContractDto.paymentInstallments?.filter(p => !p.id) || [];
+
+      // IDs dos installments que devem permanecer
+      const idsToKeep = existingInstallments.map(p => p.id);
+
       return await this.prismaService.contract.update({
         where: {
           id: id,
@@ -91,8 +106,48 @@ export class ContractsRepository {
         data: {
           ...updateContractDto,
           realtors: updateContractDto.realtors ? {set: updateContractDto?.realtors.map(id => ({id}))} : undefined,
+          paymentInstallments: {
+            // Deletar installments que não estão mais no array
+            deleteMany: {
+              contractId: id,
+              id: { notIn: idsToKeep }
+            },
+            // Atualizar installments existentes
+            update: existingInstallments.map(installment => ({
+              where: { id: installment.id },
+              data: {
+                type: installment.type,
+                value: installment.value,
+                dueDate: installment.dueDate,
+                paid: installment.paid,
+                paidAt: installment.paidAt,
+                bankName: installment.bankName,
+                bankCode: installment.bankCode,
+                agency: installment.agency,
+                agencyDigit: installment.agencyDigit,
+                accountNumber: installment.accountNumber,
+                accountDigit: installment.accountDigit,
+                accountType: installment.accountType,
+              }
+            })),
+            // Criar novos installments
+            create: newInstallments.map(installment => ({
+              type: installment.type,
+              value: installment.value,
+              dueDate: installment.dueDate,
+              paid: installment.paid,
+              paidAt: installment.paidAt,
+              bankName: installment.bankName,
+              bankCode: installment.bankCode,
+              agency: installment.agency,
+              agencyDigit: installment.agencyDigit,
+              accountNumber: installment.accountNumber,
+              accountDigit: installment.accountDigit,
+              accountType: installment.accountType,
+            }))
+          },
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, paymentInstallments: true}
       });
     } catch (error) {
       console.log({error});

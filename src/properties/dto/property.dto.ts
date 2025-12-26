@@ -46,7 +46,7 @@ export class PropertyDto {
   @IsString()
   complement: string;
 
-  @ApiProperty({ enum: PropertyType, example: PropertyType.CONDOMINIUM })
+  @ApiProperty({ enum: PropertyType, example: PropertyType.CONDOMINIUM_HOUSE })
   @IsEnum(PropertyType)
   type: PropertyType;
 
@@ -77,10 +77,6 @@ export class PropertyDto {
   @ApiProperty({ example: "2" })
   @IsString()
   parkingSpaces: string;
-
-  @ApiProperty({ example: "1" })
-  @IsString()
-  suites: string;
 
   @ApiProperty({ example: "1" })
   @IsString()

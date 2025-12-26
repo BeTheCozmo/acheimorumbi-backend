@@ -6,6 +6,7 @@ import { seedProperties } from './properties';
 import { seedContracts } from './contracts';
 import { seedPartyForm } from './partyform';
 import { seedPartyFormAttributes } from './partyform-attributes';
+import { seedWitness } from './witness';
 
 const prisma = new PrismaClient();
 async function main() {
@@ -16,6 +17,7 @@ async function main() {
   const contract = await seedContracts(prisma, property);
   const partyForm = await seedPartyForm(prisma);
   const partyFormAttributes = await seedPartyFormAttributes(prisma);
+  const witness = await seedWitness(prisma);
 }
 
 main()

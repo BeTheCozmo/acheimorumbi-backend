@@ -1,5 +1,6 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 
 export class CreateUserDto {
   @IsString()
@@ -33,4 +34,9 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   accountType: string;
+
+  @IsOptional()
+  @IsArray()
+  @Type(() => Object)
+  configurations: {[key: string]: string}[];
 }

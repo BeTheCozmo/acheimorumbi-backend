@@ -2,7 +2,7 @@ import { PrismaClient, Role } from "@prisma/client";
 import { commonUserPermissions, masterPermissions } from "./permissions";
 
 export async function seedRoles(prisma: PrismaClient) {
-  const roles = ['USER', 'MASTER'];
+  const roles = ['USER', 'MASTER', 'WITNESS'];
   const masterRole = await prisma.role.create({
     data: {
       name: 'MASTER',
@@ -15,6 +15,15 @@ export async function seedRoles(prisma: PrismaClient) {
   const commonUserRole = await prisma.role.create({
     data: {
       name: 'USER',
+      permissions: {
+        connect: commonUserPermissions.map(permission => ({ name: permission }))
+      }
+    }
+  });
+
+  const witnessRole = await prisma.role.create({
+    data: {
+      name: 'WITNESS',
       permissions: {
         connect: commonUserPermissions.map(permission => ({ name: permission }))
       }

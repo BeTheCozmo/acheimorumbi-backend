@@ -91,6 +91,7 @@ export class UsersService {
       // type: user.type,
       permissions: user.permissions,
       role: user.role,
+      configurations: user.configurations
     }));
   }
 

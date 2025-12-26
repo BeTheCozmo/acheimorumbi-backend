@@ -15,6 +15,9 @@ export async function seedUsers(prisma: PrismaClient) {
           ...masterPermissions.map(permission => ({ name: permission })),
         ],
       },
+      configurations: {
+        createMany: {data: [{name: 'porcentagemCaptacao', value: "5"}, {name: 'porcentagemCorretagem', value: "40"}]}
+      },
       roleId: 'MASTER',
     },
   })

@@ -43,7 +43,7 @@ export class CreatePropertyDto {
   @ApiProperty({description: 'Property complement'})
   complement?: string;
 
-  @IsString()
+  @IsEnum(PropertyType)
   @ApiProperty({description: 'Property type'})
   type: PropertyType;
 
@@ -87,10 +87,6 @@ export class CreatePropertyDto {
   @IsString()
   @ApiProperty({description: 'Property parking spaces'})
   parkingSpaces: string;
-
-  @IsString()
-  @ApiProperty({description: 'Property suites'})
-  suites: string;
 
   @IsString()
   @ApiProperty({description: 'Property floor level'})
