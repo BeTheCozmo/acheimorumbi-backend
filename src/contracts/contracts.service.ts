@@ -12,6 +12,7 @@ import { ContractGeneratorService } from '@modules/contract-generator/contract-g
 import { ContractContextService } from './contract-context.service';
 import { FormattedPartiesDto, FormattedPartyDto } from './dto/formatted-parties.dto';
 import { PaymentInstallmentsService } from '@modules/payment-installments/payment-installments.service';
+import { PaymentInstallmentsType } from './dto/payment-installments.dto';
 
 @Injectable()
 export class ContractsService {
@@ -42,7 +43,9 @@ export class ContractsService {
     });
 
     await this.checklistTitlesService.createDefaultTitles(contractCreated.id);
-    await this.paymentInstallmentsService.createDefaultInstallments(contractCreated.id);
+    // await this.paymentInstallmentsService.createDefaultInstallments(contractCreated.id);
+    await this.paymentInstallmentsService.createMany(createContractDto.paymentInstallments, contractCreated.id);
+    await this.paymentInstallmentsService.createPresumableInstallments(contractCreated, contractCreated.realtors[0]);
 
     return contractCreated;
   }

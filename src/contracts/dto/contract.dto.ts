@@ -93,6 +93,11 @@ export class ContractDto {
   @IsOptional()
   accountType?: string;
 
+  @ApiProperty({ description: "Chave Pix", required: false })
+  @IsString()
+  @IsOptional()
+  pixKey?: string;
+
   @ApiProperty({ description: "Data de criação do contrato" })
   @IsDateString()
   createdAt: Date;
@@ -105,4 +110,10 @@ export class ContractDto {
   @IsArray()
   @Type(() => PaymentInstallmentsDto)
   paymentInstallments: PaymentInstallmentsDto[];
+
+  @ApiProperty({ description: "IDs dos testemunhas", required: false })
+  @IsOptional()
+  @IsArray()
+  @Type(() => Array<Number>)
+  witnessIds?: number[];
 }

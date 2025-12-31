@@ -19,10 +19,12 @@ export class ContractsRepository {
           acquirerCode: createContractDto.acquirerCode,
           ownerCode: createContractDto.ownerCode,
           value: createContractDto.value,
+          ...createContractDto,
           realtors: createContractDto.realtors ? {connect: createContractDto?.realtors.map(id => ({id}))} : undefined,
           paymentInstallments: createContractDto.paymentInstallments ? {create: createContractDto.paymentInstallments} : undefined,
+          witnesses: createContractDto.witnesses ? {connect: createContractDto.witnesses.map(id => ({id}))} : undefined,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}, include: {configurations: true}}, paymentInstallments: true, witnesses: true}
       });
     } catch (error) {
       console.log({error});
@@ -36,6 +38,7 @@ export class ContractsRepository {
         include: {
           realtors: true,
           paymentInstallments: true,
+          witnesses: true,
         }
       });
     } catch (error) {
@@ -54,6 +57,7 @@ export class ContractsRepository {
           checklistTitles: {include: {checklistItems: true}}, 
           realtors: {omit: {password: true}},
           paymentInstallments: true,
+          witnesses: true,
         }
       });
     } catch (error) {
@@ -68,7 +72,7 @@ export class ContractsRepository {
         where: {
           acquirerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, witnesses: true}
       });
     } catch (error) {
       console.log({error});
@@ -82,7 +86,7 @@ export class ContractsRepository {
         where: {
           ownerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, witnesses: true}
       });
     } catch (error) {
       console.log({error});
@@ -105,6 +109,7 @@ export class ContractsRepository {
         },
         data: {
           ...updateContractDto,
+          propertyId: updateContractDto.propertyId || undefined,
           realtors: updateContractDto.realtors ? {set: updateContractDto?.realtors.map(id => ({id}))} : undefined,
           paymentInstallments: {
             // Deletar installments que não estão mais no array
@@ -146,8 +151,9 @@ export class ContractsRepository {
               accountType: installment.accountType,
             }))
           },
+          witnesses: updateContractDto.witnesses ? {connect: updateContractDto?.witnesses.map(id => ({id}))} : undefined,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, paymentInstallments: true}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, paymentInstallments: true, witnesses: true}
       });
     } catch (error) {
       console.log({error});
@@ -161,7 +167,7 @@ export class ContractsRepository {
         where: {
           id: id,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}}
+        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, paymentInstallments: true, witnesses: true}
       });
     } catch (error) {
       console.log({error});

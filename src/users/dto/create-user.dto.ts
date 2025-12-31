@@ -13,6 +13,10 @@ export class CreateUserDto {
   @ApiProperty({ description: 'The role id of the user' })
   roleId: string;
 
+  @IsString()
+  @ApiProperty({ description: 'The password of the user' })
+  password: string;
+
   @IsOptional()
   @IsString()
   bankName: string;
@@ -37,6 +41,18 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsArray()
-  @Type(() => Object)
-  configurations: {[key: string]: string}[];
+  @Type(() => Configuration)
+  configurations: Configuration[];
+}
+
+export class Configuration {
+  @IsOptional()
+  @IsNumber()
+  id?: number;
+  @IsString()
+  @ApiProperty({ description: 'The name of the configuration' })
+  name: string;
+  @IsString()
+  @ApiProperty({ description: 'The value of the configuration' })
+  value: string;
 }

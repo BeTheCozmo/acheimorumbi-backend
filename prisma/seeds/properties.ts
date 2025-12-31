@@ -27,7 +27,8 @@ export async function seedProperties(prisma: PrismaClient) {
       statusDate: new Date(),
       statusRegistry: "RegistroDoStatus",
       taxPayerNumber: "123 456 789",
-      registeredWithAnotherOwner: true
+      registeredWithAnotherOwner: true,
+      referrerId: 1,
     },
   });
 }

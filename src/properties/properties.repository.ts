@@ -13,7 +13,8 @@ export class PropertiesRepository {
         data: {
           ...createPropertyDto,
           name: createPropertyDto.name || "",
-        }
+        },
+        include: {referrer: true}
       });
     } catch (error) {
       console.log({error});
@@ -23,7 +24,7 @@ export class PropertiesRepository {
 
   async findAll() {
     try {
-      return await this.prismaService.property.findMany();
+      return await this.prismaService.property.findMany({include: {referrer: true}});
     } catch (error) {
       console.log({error});
       return [];
@@ -33,7 +34,8 @@ export class PropertiesRepository {
   async findOne(id: number) {
     try {
       return await this.prismaService.property.findUnique({
-        where: {id}
+        where: {id},
+        include: {referrer: true}
       });
     } catch (error) {
       console.log({error});
@@ -45,7 +47,8 @@ export class PropertiesRepository {
     try {
       return await this.prismaService.property.update({
         where: {id},
-        data: updatePropertyDto
+        data: updatePropertyDto,
+        include: {referrer: true}
       });
     } catch (error) {
       console.log({error});
@@ -56,7 +59,8 @@ export class PropertiesRepository {
   async remove(id: number) {
     try {
       return await this.prismaService.property.delete({
-        where: {id}
+        where: {id},
+        include: {referrer: true}
       });
     } catch (error) {
       console.log({error});

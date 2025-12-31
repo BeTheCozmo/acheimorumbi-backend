@@ -41,6 +41,7 @@ export class UsersService {
       accountDigit: null,
       accountType: null,
       bankName: null,
+      configurations: []
     });
     if (!createdUser) throw new HttpException(`Erro ao criar usuário`, HttpStatus.INTERNAL_SERVER_ERROR);
     createdUser.password = undefined as unknown as string;
@@ -109,7 +110,9 @@ export class UsersService {
 
   async alreadyExistsByEmail(email: string) { return !!await this.findByEmail(email); }
   async findByEmail(email: string) { return await this.userRepository.findByEmail(email); }
-  update(id: number, updateCustomerDto: UpdateUserDto) { return this.userRepository.update(id, updateCustomerDto); }
+  update(id: number, updateCustomerDto: UpdateUserDto) {
+    return this.userRepository.update(id, { ...updateCustomerDto });
+  }
   remove(id: number) { return this.userRepository.remove(id); }
 
   async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto) {

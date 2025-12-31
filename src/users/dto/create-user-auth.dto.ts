@@ -1,6 +1,7 @@
-import { IsNumber, IsString } from "@nestjs/class-validator";
+import { IsArray, IsNumber, IsString } from "@nestjs/class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { CreateUserDto } from "./create-user.dto";
+import { Configuration, CreateUserDto } from "./create-user.dto";
+import { Type } from "class-transformer";
 
 export class CreateUserByAuthDto {
   @IsString()
@@ -15,4 +16,9 @@ export class CreateUserByAuthDto {
   @IsNumber()
   @ApiProperty({ description: 'The role id of the user' })
   roleId: string;
+
+  @ApiProperty({ description: 'The configurations of the user' })
+  @IsArray()
+  @Type(() => Array<Configuration>)
+  configurations: Configuration[]
 }

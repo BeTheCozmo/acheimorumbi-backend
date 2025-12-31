@@ -45,15 +45,16 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    if (await this.usersService.alreadyExistsByEmail(registerDto.email))
-      throw new HttpException(`email ${registerDto.email} já existe`, HttpStatus.UNAUTHORIZED);
-    const userRole = await this.rolesService.findOneByName("USER");
-    if (!userRole) throw new HttpException('role do usuário não configurada', HttpStatus.INTERNAL_SERVER_ERROR);
+    // if (await this.usersService.alreadyExistsByEmail(registerDto.email))
+    //   throw new HttpException(`email ${registerDto.email} já existe`, HttpStatus.UNAUTHORIZED);
+    // const userRole = await this.rolesService.findOneByName("USER");
+    // if (!userRole) throw new HttpException('role do usuário não configurada', HttpStatus.INTERNAL_SERVER_ERROR);
 
-    return await this.usersService.createByAuth({
-      ...registerDto,
-      roleId: userRole.name,
-    });
+    // return await this.usersService.createByAuth({
+    //   ...registerDto,
+    //   roleId: userRole.name,
+    //   configurations
+    // });
   }
 
   async forgotPasswordRequest({email}: ForgotPasswordRequestDto) {

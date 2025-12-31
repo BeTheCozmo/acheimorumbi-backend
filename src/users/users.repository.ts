@@ -11,7 +11,7 @@ export class UsersRepository {
     private readonly prismaService: PrismaService,
   ) { }
   create(
-    createUserDto: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+    createUserDto: CreateUserDto,
   ) {
     try {
       return this.prismaService.user.create(
@@ -19,7 +19,13 @@ export class UsersRepository {
           data: {
             ...createUserDto,
             configurations: {
-              createMany: {data: [{name: 'porcentagemCaptacao', value: "5"}, {name: 'porcentagemCorretagem', value: "40"}]}
+              createMany: {
+                data: [
+                  { name: 'porcentagemCaptacao', value: "5" },
+                  { name: 'porcentagemCorretagem', value: "40" },
+                  ...createUserDto?.configurations || [],
+                ],
+              }
             }
           },
           include: {
@@ -29,6 +35,7 @@ export class UsersRepository {
         }
       );
     } catch (error) {
+      console.log({ error });
       return null;
     }
   }
@@ -76,11 +83,30 @@ export class UsersRepository {
     }
   }
 
-  async update(id: number, updateCustomerDto: Partial<User>) {
+  async update(id: number, updateCustomerDto: Partial<CreateUserDto>) {
     try {
+      const existingConfigurations = updateCustomerDto.configurations?.filter(config => config.id) || [];
+      const newConfigurations = updateCustomerDto.configurations?.filter(config => !config.id) || [];
+      const idsToKeep = existingConfigurations.map(config => config.id);
       return await this.prismaService.user.update({
         where: { id },
-        data: updateCustomerDto,
+        data: {
+          ...updateCustomerDto,
+          configurations: {
+            deleteMany: {
+              id: { notIn: idsToKeep }
+            },
+            update: existingConfigurations.map(config => ({
+              where: { id: config.id },
+              data: {
+                ...config,
+              }
+            })),
+            create: newConfigurations.map(config => ({
+              ...config,
+            }))
+          }
+        },
         include: { permissions: true, role: { include: { permissions: true } } }
       });
     } catch (error) {

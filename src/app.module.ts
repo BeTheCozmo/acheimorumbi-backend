@@ -21,6 +21,7 @@ import { UserEventsModule } from './user-events/user-events.module';
 import { ContractGeneratorModule } from './contract-generator/contract-generator.module';
 import { PaymentInstallmentsModule } from './payment-installments/payment-installments.module';
 import { ForgotAccessModule } from './forgot-access/forgot-access.module';
+import { WitnessesModule } from './witnesses/witnesses.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { ForgotAccessModule } from './forgot-access/forgot-access.module';
     ContractGeneratorModule,
     PaymentInstallmentsModule,
     ForgotAccessModule,
+    WitnessesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

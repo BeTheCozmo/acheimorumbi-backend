@@ -10,6 +10,7 @@ import { UserEventsModule } from '@modules/user-events/user-events.module';
 import { UserEventsMiddleware } from '@modules/user-events/user-events.middleware';
 import { PartiesSubmissionController } from './parties-submission.controller';
 import { PropertiesModule } from '@modules/properties/properties.module';
+import { PaymentInstallmentsModule } from '@modules/payment-installments/payment-installments.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PropertiesModule } from '@modules/properties/properties.module';
     PrismaModule,
     forwardRef(() => ContractsModule),
     PropertiesModule,
+    PaymentInstallmentsModule,
   ],
   controllers: [PartiesController, PartiesSubmissionController],
   providers: [PartiesService, PartiesRepository],

@@ -3,7 +3,9 @@ import { CreatePaymentInstallmentDto } from './dto/create-payment-installment.dt
 import { UpdatePaymentInstallmentDto } from './dto/update-payment-installment.dto';
 import { PaymentInstallmentsRepository } from './payment-installments.repository';
 import { PaymentInstallmentsType } from './enums/payment-installments-type.enum';
-import { PaymentInstallments } from '@prisma/client';
+import { Contract, PaymentInstallments, User } from '@prisma/client';
+import { ContractDto } from '@modules/contracts/dto/contract.dto';
+import { RealtorDto } from '@modules/contracts/dto/realtor.dto';
 
 @Injectable()
 export class PaymentInstallmentsService {
@@ -15,22 +17,37 @@ export class PaymentInstallmentsService {
     return this.paymentInstallmentsRepository.create(createPaymentInstallmentDto);
   }
 
-  async createDefaultInstallments(contractId: number) {
-    const types = Object.values(PaymentInstallmentsType);
-    let installmentsCreated = [] as PaymentInstallments[]
-    for (const type of types) {
-      installmentsCreated.push(await this.create({
+  async createMany(createPaymentInstallmentDtos: Omit<CreatePaymentInstallmentDto, 'contractId' | 'paidAt'>[], contractId: number) {
+    for (const installment of createPaymentInstallmentDtos || []) {
+      await this.create({
+        ...installment,
+        dueDate: new Date(Date.now() + (1000 * 60 * 60 * 24 * 30)),
         contractId,
-        value: 0,
+        paidAt: null,
+      });
+    }
+  }
+
+  async createPresumableInstallments(contract: Contract, realtor: RealtorDto & {configurations: {name: string, value: string}[]}) {
+    if(contract.type == "SALE") {
+      let brokeragePercentage = Number(realtor.configurations.find(config => config.name === 'porcentagemCorretagem').value);
+      brokeragePercentage += Number(realtor.configurations.find(config => config.name === 'porcentagemCaptacao').value);
+      await this.create({
+        contractId: contract.id,
+        value: contract.value * (brokeragePercentage / 100),
         dueDate: new Date(),
         paid: false,
         paidAt: null,
-        paidValue: 0,
-        type: type as PaymentInstallmentsType,
-      }));
+        type: PaymentInstallmentsType.COMISSION,
+        accountDigit: realtor.accountDigit,
+        accountNumber: realtor.accountNumber,
+        accountType: realtor.accountType,
+        agency: realtor.agency,
+        agencyDigit: realtor.agencyDigit,
+        bankCode: realtor.bankCode,
+        bankName: realtor.bankName,
+      });
     }
-
-    return installmentsCreated;
   }
 
   findAll() {

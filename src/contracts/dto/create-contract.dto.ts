@@ -4,6 +4,7 @@ import { IsArray, IsDate, IsDateString, IsEnum, IsNumber, IsNumberString, IsOpti
 import { ContractStatus } from "../enums/contract-status";
 import { Type } from "class-transformer";
 import { PaymentInstallmentsDto } from "./payment-installments.dto";
+import { PixType } from "../enums/pix-key-type.enum";
 
 export class CreateContractDto {
   @ApiProperty()
@@ -89,7 +90,23 @@ export class CreateContractDto {
 
   @ApiProperty()
   @IsOptional()
+  @IsEnum(PixType)
+  pixType?: PixType;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  pixKey?: string;
+
+  @ApiProperty()
+  @IsOptional()
   @IsArray()
   @Type(() => PaymentInstallmentsDto)
   paymentInstallments: PaymentInstallmentsDto[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @Type(() => Array<Number>)
+  witnesses: number[]
 }

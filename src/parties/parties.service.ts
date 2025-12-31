@@ -2,10 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
 import { PartiesRepository } from './parties.repository';
-import { Prisma } from '@prisma/client';
 import { ContractsService } from '@modules/contracts/contracts.service';
 import { PartyType } from './dto/party-type.dto';
 import { PropertiesService } from '@modules/properties/properties.service';
+import { PaymentInstallmentsService } from '@modules/payment-installments/payment-installments.service';
+import { CreatePaymentInstallmentDto } from '@modules/payment-installments/dto/create-payment-installment.dto';
+import { PaymentInstallmentsType } from '@modules/payment-installments/enums/payment-installments-type.enum';
 
 @Injectable()
 export class PartiesService {
@@ -13,6 +15,7 @@ export class PartiesService {
     private readonly partiesRepository: PartiesRepository,
     private readonly contractsService: ContractsService,
     private readonly propertiesService: PropertiesService,
+    private readonly paymentInstallmentsService: PaymentInstallmentsService,
   ) {}
   async create(createPartyDto: CreatePartyDto) {
     console.log({createPartyDto: JSON.stringify(createPartyDto, null, 2)});
@@ -30,8 +33,36 @@ export class PartiesService {
 
     await this.propertiesService.update(contract.propertyId, createPartyDto.property);
     await this.contractsService.update(contract.id, createPartyDto.contract);
-
+    if (partySubmited.some(party => party.type === PartyType.ACQUIRER))
+      await this.createInstallmentsBasedOnPartiesInputs(createPartyDto.data, contract.id);
+    
     return partySubmited;
+  }
+
+  private async createInstallmentsBasedOnPartiesInputs(parties: any[], contractId: number) {
+    const financementInstallments = parties
+    .filter(party => !!party.financiamentoBancario && (party.financiamentoBancario === 'Sim'))
+    .map(partiesThatWillFinance => ({
+      value: partiesThatWillFinance?.financiamentoValor as string,
+      type: PaymentInstallmentsType.FINANCEMENT as PaymentInstallmentsType
+    }));
+
+    const fgtsInstallments = parties
+    .filter(party => !!party.fgts && (party.fgts === 'Sim'))
+    .map(party => ({
+      value: party.fgtsValor as string,
+      type: PaymentInstallmentsType.FGTS as PaymentInstallmentsType,
+    }));
+    
+    const installments = [...financementInstallments, ...fgtsInstallments];
+    for(const installment of installments) {
+      await this.paymentInstallmentsService.create({
+        type: installment.type as PaymentInstallmentsType,
+        value: parseFloat(installment.value),
+        contractId,
+        dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+      });
+    }
   }
 
   private async findSubmitedFormByCode(code: string) {

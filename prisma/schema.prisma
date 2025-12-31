@@ -32,6 +32,7 @@ model User {
   configurations Configuration[]
   userEvents UserEvents[]
   contracts Contract[]
+  properties Property[]
 }
 
 model ForgotAccessCode {
@@ -62,7 +63,7 @@ model UserEvents {
   
   action String
   params String
-  body String
+  body String @db.VarChar(512)
   ip String
   userAgent String
   url String
@@ -92,13 +93,13 @@ model Permission {
 model Property {
   id        Int    @id @default(autoincrement())
   externalId String
-  name      String
-  cep       String
-  state     String
-  city      String
-  neighborhood String
-  street    String
-  number    String
+  name      String? @default("")
+  cep       String? @default("")
+  state     String? @default("")
+  city      String? @default("")
+  neighborhood String? @default("")
+  street    String? @default("")
+  number    String? @default("")
   complement String? @default("")
 
   condominium String? @default("")
@@ -115,19 +116,20 @@ model Property {
   alienatedBank String? @default("")
   alienationRegistry String? @default("")
 
-  registryOffice String
-  registryOfficeCity String @default("São Paulo")
-  registrationNumber String
+  registryOffice String? @default("")
+  registryOfficeCity String? @default("São Paulo")
+  registrationNumber String? @default("")
   registeredWithAnotherOwner Boolean @default(false)
 
-  acquiredDate DateTime
-  acquiredRegistry String
+  acquiredDate DateTime?
+  acquiredRegistry String?
 
-  taxPayerNumber String
+  taxPayerNumber String? @default("")
+  taxPayerName String? @default("")
 
-  area String
-  parkingSpaces String
-  floorLevel String?
+  area String? @default("")
+  parkingSpaces String? @default("")
+  floorLevel String? @default("")
 
   electricityRegistration String? @default("")
   waterRegistration String? @default("")
@@ -136,6 +138,10 @@ model Property {
   isGasIndividual Boolean @default(true)
 
   observations String? @default("")
+
+  referrerId Int
+  referrer User @relation(fields: [referrerId], references: [id], onDelete: Cascade)
+
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -184,6 +190,9 @@ model Contract {
   accountDigit String? @default("")
   accountType String? @default("")
 
+  pixType PixType? @default(CPF)
+  pixKey String? @default("")
+
   whoWillPayComission PartyType @default(OWNER)
 
   createdAt DateTime? @default(now())
@@ -193,6 +202,14 @@ model Contract {
   checklistTitles ChecklistTitle[]
 
   witnesses Witness[]
+}
+
+enum PixType {
+  CPF
+  CNPJ
+  EMAIL
+  PHONE
+  RANDOM
 }
 
 enum ContractStatus {

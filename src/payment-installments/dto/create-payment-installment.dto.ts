@@ -1,11 +1,51 @@
+import { IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
 import { PaymentInstallmentsType } from "../enums/payment-installments-type.enum";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreatePaymentInstallmentDto  {
+	@ApiProperty()
+	@IsEnum(PaymentInstallmentsType)
 	type: PaymentInstallmentsType;
+	@ApiProperty()
+	@IsNumber()
 	contractId: number;
+	@ApiProperty()
+	@IsNumber()
 	value: number;
+	@ApiProperty()
+	@IsNumber()
 	dueDate: Date;
-	paid: boolean;
-	paidAt: Date;
-	paidValue: number;
+	@ApiProperty()
+	paid?: boolean;
+	@ApiProperty()
+	@IsNumber()
+	paidAt?: Date;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	bankName?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	bankCode?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	agency?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	agencyDigit?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	accountNumber?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	accountDigit?: string;
+	@ApiProperty()
+	@IsOptional()
+	@IsString()
+	accountType?: string;
 }

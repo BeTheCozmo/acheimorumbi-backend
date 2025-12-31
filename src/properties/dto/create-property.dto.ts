@@ -11,38 +11,46 @@ export class CreatePropertyDto {
   name?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property external id'})
   externalId: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property cep'})
   cep: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property address number'})
   number: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property state'})
   state: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property city'})
   city: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property neighborhood'})
   neighborhood: string;
 
+  @IsOptional()
   @IsString()
   @ApiProperty({description: 'Property street'})
   street: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   @ApiProperty({description: 'Property complement'})
   complement?: string;
 
+  @IsOptional()
   @IsEnum(PropertyType)
   @ApiProperty({description: 'Property type'})
   type: PropertyType;
@@ -73,37 +81,46 @@ export class CreatePropertyDto {
   iptuValue?: number;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property registry office'})
-  registryOffice: string;
+  registryOffice?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property registration number'})
-  registrationNumber: string;
+  registrationNumber?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property area'})
-  area: string;
+  area?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property parking spaces'})
-  parkingSpaces: string;
+  parkingSpaces?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property floor level'})
-  floorLevel: string;
+  floorLevel?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({description: 'Property observations'})
-  observations: string;
+  observations?: string;
 
+  @IsOptional()
   @IsEnum(PropertyStatus)
   @ApiProperty()
   status: PropertyStatus;
 
+  @IsOptional()
   @IsDateString()
   @ApiProperty()
   statusDate: Date;
 
+  @IsOptional()
   @IsString()
   @ApiProperty()
   statusRegistry: string;
@@ -119,21 +136,26 @@ export class CreatePropertyDto {
   alienationRegistry: string;
 
   @IsOptional()
+  @IsOptional()
   @IsString()
   registryOfficeCity?: string;
   
+  @IsOptional()
   @IsBoolean()
   @ApiProperty()
   registeredWithAnotherOwner: boolean;
   
+  @IsOptional()
   @IsDateString()
   @ApiProperty()
   acquiredDate: Date;
   
+  @IsOptional()
   @IsString()
   @ApiProperty()
   acquiredRegistry: string;
   
+  @IsOptional()
   @IsString()
   @ApiProperty()
   taxPayerNumber: string;
@@ -158,4 +180,8 @@ export class CreatePropertyDto {
   @IsOptional()
   @ApiProperty()
   isGasIndividual: boolean;
+
+  @ApiProperty()
+  @IsNumber()
+  referrerId: number;
 }
