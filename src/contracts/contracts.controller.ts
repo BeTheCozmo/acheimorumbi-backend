@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, StreamableFile, Query } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
 import { CreateContractDto } from './dto/create-contract.dto';
 import { UpdateContractDto } from './dto/update-contract.dto';
@@ -8,6 +8,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ContractDto } from './dto/contract.dto';
 import { Validator } from '@modules/permissions/permissions.decorator';
 import { permissionsValidator } from '@modules/permissions/validator/permissions.validator';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags("Contracts")
 @Controller('contracts')
@@ -27,8 +28,9 @@ export class ContractsController {
   @ApiOperation({ summary: "Get all contracts" })
   @ApiResponse({ type: ContractDto, isArray: true })
   @Validator(permissionsValidator({contracts: "id"}, ["read"]))
-  findAll() {
-    return this.contractsService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.contractsService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

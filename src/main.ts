@@ -40,7 +40,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {});
   if (process.env.ACTIVATE_SWAGGER === 'YES') SwaggerModule.setup('swagger', app, document, options);
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    transformOptions: {
+      enableImplicitConversion: true
+    }
+  }));
   app.enableCors();
 
   await app.listen(process.env.PORT || 3070, async () => {

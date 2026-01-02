@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles, HttpException, HttpStatus, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFiles, HttpException, HttpStatus, Res, StreamableFile, Query } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
@@ -12,6 +12,7 @@ import { DocumentDto } from './dto/document.dto';
 import { Validator } from '@modules/permissions/permissions.decorator';
 import { permissionsValidator } from '@modules/permissions/validator/permissions.validator';
 import { createReadStream } from 'fs';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags('Documents')
 @Controller('contracts/:id/documents')
@@ -86,8 +87,9 @@ export class DocumentsController {
   @ApiOperation({ summary: "Get all documents" })
   @ApiResponse({ type: DocumentDto, isArray: true })
   @Validator(permissionsValidator({contracts: "id", documents: "did"}, ["read"]))
-  findAll(@Param('id') contractId: string) {
-    return this.documentsService.findAll(+contractId);
+  findAll(@Param('id') contractId: string, @Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.documentsService.findAll(+contractId, filters, limit, offset, page);
   }
 
   @Get(':did')

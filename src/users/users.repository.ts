@@ -4,6 +4,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { USER_FILTER_CONFIG } from "./users.filter-config";
 
 @Injectable()
 export class UsersRepository {
@@ -51,6 +53,33 @@ export class UsersRepository {
       });
     } catch (error) {
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, USER_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.user.findMany({
+          where,
+          include: {
+            permissions: true,
+            configurations: true,
+            role: { include: { permissions: true } },
+          },
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.user.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

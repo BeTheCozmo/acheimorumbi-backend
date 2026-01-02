@@ -2,6 +2,8 @@ import { PrismaService } from "@modules/prisma/prisma.service";
 import { Inject, Injectable } from "@nestjs/common";
 import { CreateDocumentDto } from "./dto/create-document.dto";
 import { UpdateDocumentDto } from "./dto/update-document.dto";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { DOCUMENT_FILTER_CONFIG } from "./documents.filter-config";
 
 @Injectable()
 export class DocumentsRepository {
@@ -26,6 +28,28 @@ export class DocumentsRepository {
     } catch (error) {
       console.log({ error });
       return [];
+    }
+  }
+
+  async findAllFiltered(contractId: number, filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere({ ...filters, contractId }, DOCUMENT_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.document.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.document.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
@@ -7,6 +7,7 @@ import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Validator } from 'src/permissions/permissions.decorator';
 import { permissionsValidator } from 'src/permissions/validator/permissions.validator';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags('Properties')
 @Controller('properties')
@@ -24,8 +25,9 @@ export class PropertiesController {
   @Get()
   @ApiOperation({summary: 'Get all properties'})
   @Validator(permissionsValidator({properties: 'id'}, ['read']))
-  findAll() {
-    return this.propertiesService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.propertiesService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

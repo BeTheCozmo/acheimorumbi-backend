@@ -13,6 +13,7 @@ import { ContractContextService } from './contract-context.service';
 import { FormattedPartiesDto, FormattedPartyDto } from './dto/formatted-parties.dto';
 import { PaymentInstallmentsService } from '@modules/payment-installments/payment-installments.service';
 import { PaymentInstallmentsType } from './dto/payment-installments.dto';
+import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
 
 @Injectable()
 export class ContractsService {
@@ -50,7 +51,22 @@ export class ContractsService {
     return contractCreated;
   }
 
-  findAll() {
+  async findAll(filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+    const hasFilters = filters && Object.keys(filters).length > 0;
+    const actualLimit = Number(limit) || 10;
+    const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
+
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
+      const { data, total } = await this.contractsRepository.findAllFiltered(filters || {}, actualLimit, actualOffset);
+
+      return {
+        data,
+        total,
+        limit: actualLimit,
+        ...(page ? { page } : { offset: actualOffset })
+      };
+    }
+
     return this.contractsRepository.findAll();
   }
 

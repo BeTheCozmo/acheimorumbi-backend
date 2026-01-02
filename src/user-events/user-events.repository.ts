@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { CreateUserEventDto } from "./dto/create-user-event.dto";
 import { PrismaService } from "@modules/prisma/prisma.service";
 import { UpdateUserEventDto } from "./dto/update-user-event.dto";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { USER_EVENT_FILTER_CONFIG } from "./user-events.filter-config";
 
 @Injectable()
 export class UserEventsRepository {
@@ -26,6 +28,28 @@ export class UserEventsRepository {
     } catch (error) {
       console.log({error});
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, USER_EVENT_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.userEvents.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.userEvents.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { WitnessesService } from './witnesses.service';
 import { CreateWitnessDto } from './dto/create-witness.dto';
 import { UpdateWitnessDto } from './dto/update-witness.dto';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @Controller('witnesses')
 export class WitnessesController {
@@ -13,8 +14,9 @@ export class WitnessesController {
   }
 
   @Get()
-  findAll() {
-    return this.witnessesService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.witnessesService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

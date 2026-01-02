@@ -4,6 +4,8 @@ import { CreatePartyDto } from "./dto/create-party.dto";
 import { UpdatePartyDto } from "./dto/update-party.dto";
 import { Prisma } from "@prisma/client";
 import { PartyType } from "./dto/party-type.dto";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { PARTY_FILTER_CONFIG } from "./parties.filter-config";
 
 @Injectable()
 export class PartiesRepository {
@@ -50,6 +52,28 @@ export class PartiesRepository {
     } catch (error) {
       console.log({ error });
       return null;
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, PARTY_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.party.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.party.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

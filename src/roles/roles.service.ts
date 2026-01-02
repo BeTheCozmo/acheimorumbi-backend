@@ -4,6 +4,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesRepository } from './roles.repository';
 import { PermissionsService } from 'src/permissions/permissions.service';
 import { Permission } from '@prisma/client';
+import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
 
 @Injectable()
 export class RolesService {
@@ -29,7 +30,22 @@ export class RolesService {
     });
   }
 
-  findAll() {
+  async findAll(filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+    const hasFilters = filters && Object.keys(filters).length > 0;
+    const actualLimit = Number(limit) || 10;
+    const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
+
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
+      const { data, total } = await this.rolesRepository.findAllFiltered(filters || {}, actualLimit, actualOffset);
+
+      return {
+        data,
+        total,
+        limit: actualLimit,
+        ...(page ? { page } : { offset: actualOffset })
+      };
+    }
+
     return this.rolesRepository.findAll();
   }
 

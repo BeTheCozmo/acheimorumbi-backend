@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PartyFormsService } from './party-forms.service';
 import { CreatePartyFormDto } from './dto/create-party-form.dto';
 import { UpdatePartyFormDto } from './dto/update-party-form.dto';
@@ -9,6 +9,7 @@ import { Validator } from '@modules/permissions/permissions.decorator';
 import { permissionsValidator } from '@modules/permissions/validator/permissions.validator';
 import { AuthGuard } from '@modules/auth/auth.guard';
 import { CreateFormAttributeDto } from './dto/form-attribute.dto';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags('Party Forms')
 @Controller('party-forms')
@@ -32,8 +33,9 @@ export class PartyFormsController {
   @Get()
   @UseGuards(AuthGuard, PermissionsGuard)
   @Validator(permissionsValidator({"party-forms": "id"}, ['read']))
-  findAll() {
-    return this.partyFormsService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.partyFormsService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

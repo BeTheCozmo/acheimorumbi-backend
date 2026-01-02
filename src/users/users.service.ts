@@ -11,6 +11,7 @@ import { CreateUserByAuthDto } from './dto/create-user-auth.dto';
 import { CodeGeneratorService } from '@modules/code-generator/code-generator.service';
 import { UsersMailer } from './users.mailer';
 import { UpdatePasswordDto } from '../auth/dto/update-password.dto';
+import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
 
 @Injectable()
 export class UsersService {
@@ -80,7 +81,32 @@ export class UsersService {
     return await this.usersMailer.notifyUserCreated(data);
   }
 
-  async findAll() {
+  async findAll(filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+    const hasFilters = filters && Object.keys(filters).length > 0;
+    const actualLimit = Number(limit) || 10;
+    const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
+
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
+      const { data, total } = await this.userRepository.findAllFiltered(filters || {}, actualLimit, actualOffset);
+
+      const mappedData = data.map(user => ({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        roleId: user.roleId,
+        permissions: user.permissions,
+        role: user.role,
+        configurations: user.configurations
+      }));
+
+      return {
+        data: mappedData,
+        total,
+        limit: actualLimit,
+        ...(page ? { page } : { offset: actualOffset })
+      };
+    }
+
     const users = await this.userRepository.findAll();
     if(!users) return [];
 
@@ -89,7 +115,6 @@ export class UsersService {
       name: user.name,
       email: user.email,
       roleId: user.roleId,
-      // type: user.type,
       permissions: user.permissions,
       role: user.role,
       configurations: user.configurations

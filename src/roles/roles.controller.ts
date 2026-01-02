@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -7,6 +7,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { Validator } from 'src/permissions/permissions.decorator';
 import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { permissionsValidator } from 'src/permissions/validator/permissions.validator';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags('Roles')
 @Controller('roles')
@@ -27,8 +28,9 @@ export class RolesController {
   @ApiOperation({summary: "Get all Roles"})
   @ApiResponse({status: 200, description: "Roles response", type: [CreateRoleDto]})
   @Validator(permissionsValidator({roles: "id"}, ['read']))
-  findAll() {
-    return this.rolesService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.rolesService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

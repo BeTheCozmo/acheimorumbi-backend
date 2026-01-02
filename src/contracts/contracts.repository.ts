@@ -3,6 +3,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CreateContractDto } from "./dto/create-contract.dto";
 import { UpdateContractDto } from "./dto/update-contract.dto";
 import { ContractStatus } from "./enums/contract-status";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { CONTRACT_FILTER_CONFIG } from "./contracts.filter-config";
 
 @Injectable()
 export class ContractsRepository {
@@ -44,6 +46,33 @@ export class ContractsRepository {
     } catch (error) {
       console.log({error});
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, CONTRACT_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.contract.findMany({
+          where,
+          include: {
+            realtors: true,
+            paymentInstallments: true,
+            witnesses: true,
+          },
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.contract.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

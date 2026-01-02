@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PartiesService } from './parties.service';
 import { CreatePartyDto } from './dto/create-party.dto';
 import { UpdatePartyDto } from './dto/update-party.dto';
@@ -7,6 +7,7 @@ import { AuthGuard } from '@modules/auth/auth.guard';
 import { PermissionsGuard } from '@modules/permissions/permissions.guard';
 import { Validator } from '@modules/permissions/permissions.decorator';
 import { permissionsValidator } from '@modules/permissions/validator/permissions.validator';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags('Parties')
 @Controller('contracts/:id/parties')
@@ -25,8 +26,9 @@ export class PartiesController {
   @ApiOperation({ summary: 'Get all parties' })
   @UseGuards(AuthGuard, PermissionsGuard)
   @Validator(permissionsValidator({contracts: "id", parties: "pid"}))
-  findAll() {
-    return this.partiesService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.partiesService.findAll(filters, limit, offset, page);
   }
 
   @Get(':pid')

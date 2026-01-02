@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { UserEventsService } from './user-events.service';
 import { CreateUserEventDto } from './dto/create-user-event.dto';
 import { UpdateUserEventDto } from './dto/update-user-event.dto';
@@ -6,6 +6,7 @@ import { AuthGuard } from '@modules/auth/auth.guard';
 import { PermissionsGuard } from '@modules/permissions/permissions.guard';
 import { Validator } from '@modules/permissions/permissions.decorator';
 import { permissionsValidator } from '@modules/permissions/validator/permissions.validator';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @Controller('user-events')
 @UseGuards(AuthGuard, PermissionsGuard)
@@ -19,8 +20,9 @@ export class UserEventsController {
 
   @Get()
   @Validator(permissionsValidator({'user-events': 'id'}, ["read"]))
-  findAll() {
-    return this.userEventsService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.userEventsService.findAll(filters, limit, offset, page);
   }
 
   @Get('user/:uid')

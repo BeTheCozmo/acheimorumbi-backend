@@ -2,6 +2,8 @@ import { PrismaService } from "@modules/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { CreateWitnessDto } from "./dto/create-witness.dto";
 import { UpdateWitnessDto } from "./dto/update-witness.dto";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { WITNESS_FILTER_CONFIG } from "./witnesses.filter-config";
 
 @Injectable()
 export class WitnessesRepository {
@@ -26,6 +28,28 @@ export class WitnessesRepository {
     } catch (error) {
       console.log({error});
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, WITNESS_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.witness.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.witness.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

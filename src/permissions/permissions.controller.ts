@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -8,6 +8,7 @@ import { PermissionDto } from './dto/permission.dto';
 import { PermissionsGuard } from './permissions.guard';
 import { Validator } from './permissions.decorator';
 import { permissionsValidator } from './validator/permissions.validator';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags("Permissions")
 @Controller('permissions')
@@ -27,8 +28,9 @@ export class PermissionsController {
   @Get()
   @ApiOperation({ summary: 'Get all permissions' })
   @ApiResponse({ status: 200, description: 'Permissions retrieved successfully', type: [PermissionDto] })
-  findAll() {
-    return this.permissionsService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.permissionsService.findAll(filters, limit, offset, page);
   }
 
   @Get(':id')

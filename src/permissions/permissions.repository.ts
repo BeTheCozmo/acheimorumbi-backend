@@ -3,6 +3,8 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Permission } from '@prisma/client';
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { PERMISSION_FILTER_CONFIG } from "./permissions.filter-config";
 
 @Injectable()
 export class PermissionsRepository {
@@ -25,6 +27,28 @@ export class PermissionsRepository {
       return this.prismaService.permission.findMany();
     } catch (error) {
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, PERMISSION_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.permission.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.permission.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

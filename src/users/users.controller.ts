@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -9,6 +9,7 @@ import { PermissionsGuard } from 'src/permissions/permissions.guard';
 import { Validator } from 'src/permissions/permissions.decorator';
 import { permissionsValidator } from 'src/permissions/validator/permissions.validator';
 import { UpdatePasswordDto } from '../auth/dto/update-password.dto';
+import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 
 @ApiTags("Users")
 @Controller('users')
@@ -29,8 +30,9 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserDto] })
   @Validator(permissionsValidator({users: "id"}, ['read']))
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: FilterQueryDto & Record<string, any>) {
+    const { limit, offset, page, ...filters } = query;
+    return this.usersService.findAll(filters, limit, offset, page);
   }
 
   @Get('profile')

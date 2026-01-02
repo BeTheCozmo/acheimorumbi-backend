@@ -4,6 +4,8 @@ import { UpdatePartyFormDto } from "./dto/update-party-form.dto";
 import { PartyFormType } from "./enums/party-form-type.enum";
 import { PrismaService } from "@modules/prisma/prisma.service";
 import { CreateFormAttributeDto } from "./dto/form-attribute.dto";
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { PARTY_FORM_FILTER_CONFIG } from "./party-forms.filter-config";
 
 @Injectable()
 export class PartyFormsRepository {
@@ -39,6 +41,28 @@ export class PartyFormsRepository {
     } catch (error) {
       console.log({error});
       return null;
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, PARTY_FORM_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.partyForm.findMany({
+          where,
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.partyForm.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 

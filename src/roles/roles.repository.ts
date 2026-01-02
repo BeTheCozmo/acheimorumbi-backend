@@ -3,6 +3,8 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Permission, Prisma, Role } from '@prisma/client';
+import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
+import { ROLE_FILTER_CONFIG } from "./roles.filter-config";
 
 @Injectable()
 export class RolesRepository {
@@ -35,6 +37,29 @@ export class RolesRepository {
       });
     } catch (error) {
       return [];
+    }
+  }
+
+  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+    try {
+      const where = buildPrismaWhere(filters, ROLE_FILTER_CONFIG);
+
+      const [data, total] = await Promise.all([
+        this.prismaService.role.findMany({
+          where,
+          include: { permissions: true },
+          take: limit,
+          skip: offset,
+        }),
+        this.prismaService.role.count({
+          where: removeMode(where)
+        }),
+      ]);
+
+      return { data, total };
+    } catch (error) {
+      console.log({ error });
+      return { data: [], total: 0 };
     }
   }
 
