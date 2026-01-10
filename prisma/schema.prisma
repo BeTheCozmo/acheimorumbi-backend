@@ -94,7 +94,7 @@ model Permission {
 
 model Property {
   id        Int    @id @default(autoincrement())
-  externalId String
+  externalId String? @default("")
   name      String? @default("")
   cep       String? @default("")
   state     String? @default("")
@@ -110,10 +110,10 @@ model Property {
   condominiumValue Int? @default(0)
   iptuValue Int? @default(0)
 
-  type PropertyType
-  status PropertyStatus
-  statusDate DateTime
-  statusRegistry String
+  type PropertyType?
+  status PropertyStatus?
+  statusDate DateTime?
+  statusRegistry String? @default("")
 
   alienatedBank String? @default("")
   alienationRegistry String? @default("")
