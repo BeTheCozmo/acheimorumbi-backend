@@ -74,7 +74,11 @@ export class PropertiesRepository {
     try {
       return await this.prismaService.property.update({
         where: {id},
-        data: updatePropertyDto,
+        data: {
+          ...updatePropertyDto,
+          statusDate: updatePropertyDto.statusDate ? new Date(updatePropertyDto.statusDate) : null,
+          acquiredDate: updatePropertyDto.acquiredDate ? new Date(updatePropertyDto.acquiredDate) : null,
+        },
         include: {referrer: true}
       });
     } catch (error) {
