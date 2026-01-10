@@ -9,6 +9,8 @@ import { PaymentInstallmentsService } from '@modules/payment-installments/paymen
 import { CreatePaymentInstallmentDto } from '@modules/payment-installments/dto/create-payment-installment.dto';
 import { PaymentInstallmentsType } from '@modules/payment-installments/enums/payment-installments-type.enum';
 import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
+import { CreateContractDto } from '@modules/contracts/dto/create-contract.dto';
+import { UpdateContractDto } from '@modules/contracts/dto/update-contract.dto';
 
 @Injectable()
 export class PartiesService {
@@ -33,7 +35,7 @@ export class PartiesService {
     
 
     await this.propertiesService.update(contract.propertyId, createPartyDto.property);
-    await this.contractsService.update(contract.id, createPartyDto.contract);
+    await this.contractsService.update(contract.id, contract as unknown as UpdateContractDto);
     if (partySubmited.some(party => party.type === PartyType.ACQUIRER))
       await this.createInstallmentsBasedOnPartiesInputs(createPartyDto.data, contract.id);
     

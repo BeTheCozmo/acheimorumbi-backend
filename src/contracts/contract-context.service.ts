@@ -140,23 +140,23 @@ export class ContractContextService {
 
     console.log({paymentInstallments: contract.paymentInstallments})
 
-    ctx.parcelaSinal = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNAL) || undefined;
-    if(ctx.parcelaSinal) ctx.parcelaSinal = ctx.parcelaSinal[0];
+    const parcelaSinal = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNAL) || undefined;
+    if(parcelaSinal) ctx.parcelaSinal = parcelaSinal[0];
 
-    ctx.parcelaDocumentacao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.DOCUMENTATION) || undefined;
-    if(ctx.parcelaDocumentacao) ctx.parcelaDocumentacao = ctx.parcelaDocumentacao[0];
+    const parcelaDocumentacao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.DOCUMENTATION) || undefined;
+    if(parcelaDocumentacao) ctx.parcelaDocumentacao = parcelaDocumentacao[0];
     
-    ctx.parcelaAssinatura = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNATURE) || undefined;
-    if(ctx.parcelaAssinatura) ctx.parcelaAssinatura = ctx.parcelaAssinatura[0];
+    const parcelaAssinatura = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.SIGNATURE) || undefined;
+    if(parcelaAssinatura) ctx.parcelaAssinatura = parcelaAssinatura[0];
     
-    ctx.parcelaFgts = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FGTS) || undefined;
-    if(ctx.parcelaFgts) ctx.parcelaFgts = ctx.parcelaFgts[0];
+    const parcelaFgts = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FGTS) || undefined;
+    if(parcelaFgts) ctx.parcelaFgts = parcelaFgts[0];
     
-    ctx.parcelaFinanciamento = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FINANCEMENT) || undefined;
-    if(ctx.parcelaFinanciamento) ctx.parcelaFinanciamento = ctx.parcelaFinanciamento[0];
+    const parcelaFinanciamento = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.FINANCEMENT) || undefined;
+    if(parcelaFinanciamento) ctx.parcelaFinanciamento = parcelaFinanciamento[0];
     
-    ctx.parcelaComissao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.COMISSION) || undefined;
-    if(ctx.parcelaComissao) ctx.parcelaComissao = ctx.parcelaComissao[0];
+    const parcelaComissao = contract.paymentInstallments.filter(installment => installment.type == PaymentInstallmentsType.COMISSION) || undefined;
+    if(parcelaComissao) ctx.parcelaComissao = parcelaComissao[0];
     
     return ctx;
   }

@@ -91,7 +91,7 @@ export class PropertyDto {
   status: PropertyStatus;
 
   @ApiProperty({ description: "Data do Status", example: new Date()})
-  statusDate: Date;
+  statusDate: string;
 
   @ApiProperty({ description: "Nº do Registro do Status "})
   @IsString()
@@ -128,7 +128,7 @@ export class PropertyDto {
 
   @ApiProperty({ description: "Data de adquirimento segundo a matrícula" })
   @IsDateString()
-  acquiredDate: Date;
+  acquiredDate: string;
 
   @ApiProperty({ description: "Número no registro que prova o adquirimento por parte dos donos do imóvel", example: "registro123456" })
   @IsString()

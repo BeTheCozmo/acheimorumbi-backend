@@ -38,6 +38,12 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   accountType: string;
+  @IsOptional()
+  @IsString()
+  pixKey: string;
+  @IsOptional()
+  @IsString()
+  pixType: string;
 
   @IsOptional()
   @IsArray()

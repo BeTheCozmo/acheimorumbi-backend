@@ -24,6 +24,8 @@ model User {
   accountNumber String? @default("")
   accountDigit String? @default("")
   accountType String? @default("")
+  pixKey String? @default("")
+  pixType String? @default("")
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -182,6 +184,7 @@ model Contract {
   leaseEndDate DateTime?
   rentDueDay Int?
 
+  bankOwner String? @default("")
   bankName String? @default("")
   bankCode String? @default("")
   agency String? @default("")
@@ -235,6 +238,7 @@ model PaymentInstallments {
   paid Boolean @default(false)
   paidAt DateTime?
 
+  bankOwner String? @default("")
   bankName String? @default("")
   bankCode String? @default("")
   agency String? @default("")

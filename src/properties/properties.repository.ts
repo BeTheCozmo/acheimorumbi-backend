@@ -15,6 +15,8 @@ export class PropertiesRepository {
         data: {
           ...createPropertyDto,
           name: createPropertyDto.name || "",
+          statusDate: createPropertyDto.statusDate ? new Date(createPropertyDto.statusDate) : null,
+          acquiredDate: createPropertyDto.acquiredDate ? new Date(createPropertyDto.acquiredDate) : null
         },
         include: {referrer: true}
       });

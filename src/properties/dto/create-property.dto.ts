@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
 import { PropertyType } from "../enums/property-type";
 import { ApiProperty } from "@nestjs/swagger";
 import { $Enums, Property } from "@prisma/client";
@@ -116,9 +116,9 @@ export class CreatePropertyDto {
   status: PropertyStatus;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   @ApiProperty()
-  statusDate: Date;
+  statusDate: string;
 
   @IsOptional()
   @IsString()
@@ -146,9 +146,9 @@ export class CreatePropertyDto {
   registeredWithAnotherOwner: boolean;
   
   @IsOptional()
-  @IsDateString()
+  @IsString()
   @ApiProperty()
-  acquiredDate: Date;
+  acquiredDate: string;
   
   @IsOptional()
   @IsString()

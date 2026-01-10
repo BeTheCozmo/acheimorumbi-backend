@@ -101,7 +101,12 @@ export class ContractsRepository {
         where: {
           acquirerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, witnesses: true}
+        include: {
+          checklistTitles: {include: {checklistItems: true}},
+          realtors: {omit: {password: true}},
+          witnesses: true,
+          paymentInstallments: true,
+        }
       });
     } catch (error) {
       console.log({error});
@@ -115,7 +120,12 @@ export class ContractsRepository {
         where: {
           ownerCode: code,
         },
-        include: {checklistTitles: {include: {checklistItems: true}}, realtors: {omit: {password: true}}, witnesses: true}
+        include: {
+          checklistTitles: {include: {checklistItems: true}},
+          realtors: {omit: {password: true}},
+          witnesses: true,
+          paymentInstallments: true,
+        }
       });
     } catch (error) {
       console.log({error});

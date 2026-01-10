@@ -42,6 +42,8 @@ export class UsersService {
       accountDigit: null,
       accountType: null,
       bankName: null,
+      pixKey: null,
+      pixType: null,
       configurations: []
     });
     if (!createdUser) throw new HttpException(`Erro ao criar usuário`, HttpStatus.INTERNAL_SERVER_ERROR);
