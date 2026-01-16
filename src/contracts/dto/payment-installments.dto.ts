@@ -1,4 +1,5 @@
 import { IsBoolean, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator"
+import { PaymentInstallmentsType } from "@prisma/client"
 
 export class PaymentInstallmentsDto {
   @IsOptional()
@@ -41,11 +42,11 @@ export class PaymentInstallmentsDto {
   accountType: string
 }
 
-export enum PaymentInstallmentsType {
-  SIGNAL = "SIGNAL",
-  DOCUMENTATION = "DOCUMENTATION",
-  SIGNATURE = "SIGNATURE",
-  FGTS = "FGTS",
-  FINANCEMENT = "FINANCEMENT",
-  COMISSION = "COMISSION",
-}
+// export enum PaymentInstallmentsType {
+//   SIGNAL = "SIGNAL",
+//   DOCUMENTATION = "DOCUMENTATION",
+//   SIGNATURE = "SIGNATURE",
+//   FGTS = "FGTS",
+//   FINANCEMENT = "FINANCEMENT",
+//   COMISSION = "COMISSION",
+// }

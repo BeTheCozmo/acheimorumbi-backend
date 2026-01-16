@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Configuration {
+  name String @unique
+  value String
+
+  @@index([name])
+}
+
 model User {
   id       Int    @id @default(autoincrement())
   name     String
@@ -31,7 +38,7 @@ model User {
   updatedAt DateTime? @updatedAt
 
   forgotAccessCodes ForgotAccessCode[]
-  configurations Configuration[]
+  configurations UserConfiguration[]
   userEvents UserEvents[]
   contracts Contract[]
   properties Property[]
@@ -47,7 +54,7 @@ model ForgotAccessCode {
   used Boolean @default(false)
 }
 
-model Configuration {
+model UserConfiguration {
   id Int @id @default(autoincrement())
   userId Int
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -170,6 +177,7 @@ model Contract {
   acquirerCode String @unique
 
   value Float
+  intermediationPercentage Float @default(6)
 
   parties Party[]
   realtors User[]

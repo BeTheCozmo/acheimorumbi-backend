@@ -4,10 +4,12 @@ import { WitnessesController } from './witnesses.controller';
 import { PrismaModule } from '@modules/prisma/prisma.module';
 import { PermissionsModule } from '@modules/permissions/permissions.module';
 import { WitnessesRepository } from './witnesses.repository';
+import { UsersModule } from '@modules/users/users.module';
 
 @Module({
   imports: [
     PrismaModule,
+    UsersModule,
     PermissionsModule,
   ],
   controllers: [WitnessesController],

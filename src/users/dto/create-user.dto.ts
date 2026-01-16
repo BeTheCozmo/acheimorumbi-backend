@@ -14,6 +14,7 @@ export class CreateUserDto {
   roleId: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({ description: 'The password of the user' })
   password: string;
 

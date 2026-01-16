@@ -1,5 +1,18 @@
-import { FilterMode, FieldFilterConfig } from 'src/common/utils/prisma-filter.util';
+import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
 
-export const PERMISSION_FILTER_CONFIG: FieldFilterConfig = {
-  name: FilterMode.EXACT,
+/**
+ * Configuração completa para o modelo Permission
+ *
+ * - filterConfig: Define como cada campo deve ser filtrado (CONTAINS ou EXACT)
+ * - sortableFields: Lista de campos permitidos para ordenação
+ */
+export const PERMISSION_CONFIG: ModelConfig = {
+  filterConfig: {
+    name: FilterMode.EXACT,
+  },
+  sortableFields: [
+    'name',
+    'createdAt',
+    'updatedAt',
+  ],
 };

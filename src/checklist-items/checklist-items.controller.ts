@@ -23,8 +23,8 @@ export class ChecklistItemsController {
   @ApiOperation({ summary: 'Get all checklist items' })
   @Validator(permissionsValidator({contracts: "id", 'checklist-items': "ciid"}, ["read"]))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.checklistItemsService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.checklistItemsService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   // @Get(':id')

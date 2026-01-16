@@ -11,13 +11,28 @@ export class DocumentsService {
     return this.documentsRepository.create(createDocumentDto);
   }
 
-  async findAll(contractId: number, filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+  async findAll(
+    contractId: number,
+    filters?: Record<string, any>,
+    limit?: number,
+    offset?: number,
+    page?: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ): Promise<any[] | PaginatedResponse<any>> {
     const hasFilters = filters && Object.keys(filters).length > 0;
     const actualLimit = Number(limit) || 10;
     const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
 
-    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
-      const { data, total } = await this.documentsRepository.findAllFiltered(contractId, filters || {}, actualLimit, actualOffset);
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined || orderBy !== undefined) {
+      const { data, total } = await this.documentsRepository.findAllFiltered(
+        contractId,
+        filters || {},
+        actualLimit,
+        actualOffset,
+        orderBy,
+        order
+      );
 
       return {
         data,

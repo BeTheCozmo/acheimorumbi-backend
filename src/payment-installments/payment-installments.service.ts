@@ -6,11 +6,13 @@ import { PaymentInstallmentsType } from './enums/payment-installments-type.enum'
 import { Contract, PaymentInstallments, User } from '@prisma/client';
 import { ContractDto } from '@modules/contracts/dto/contract.dto';
 import { RealtorDto } from '@modules/contracts/dto/realtor.dto';
+import { ConfigurationsService } from '@modules/configurations/configurations.service';
 
 @Injectable()
 export class PaymentInstallmentsService {
   constructor(
     private readonly paymentInstallmentsRepository: PaymentInstallmentsRepository,
+    private readonly configurationsService: ConfigurationsService,
   ) {}
 
   create(createPaymentInstallmentDto: CreatePaymentInstallmentDto) {
@@ -34,7 +36,7 @@ export class PaymentInstallmentsService {
       brokeragePercentage += Number(realtor.configurations.find(config => config.name === 'porcentagemCaptacao').value);
       await this.create({
         contractId: contract.id,
-        value: contract.value * (brokeragePercentage / 100),
+        value: (contract.value * (contract.intermediationPercentage / 100) * (brokeragePercentage / 100)),
         dueDate: new Date(),
         paid: false,
         paidAt: null,

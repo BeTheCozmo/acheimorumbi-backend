@@ -88,8 +88,8 @@ export class DocumentsController {
   @ApiResponse({ type: DocumentDto, isArray: true })
   @Validator(permissionsValidator({contracts: "id", documents: "did"}, ["read"]))
   findAll(@Param('id') contractId: string, @Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.documentsService.findAll(+contractId, filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.documentsService.findAll(+contractId, filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':did')

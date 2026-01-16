@@ -26,8 +26,8 @@ export class PropertiesController {
   @ApiOperation({summary: 'Get all properties'})
   @Validator(permissionsValidator({properties: 'id'}, ['read']))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.propertiesService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.propertiesService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':id')

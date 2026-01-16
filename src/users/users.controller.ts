@@ -31,8 +31,8 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Users retrieved successfully', type: [UserDto] })
   @Validator(permissionsValidator({users: "id"}, ['read']))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.usersService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.usersService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get('profile')

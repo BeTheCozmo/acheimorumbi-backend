@@ -14,13 +14,13 @@ import { FilterQueryDto } from 'src/common/dto/filter-query.dto';
 @Controller('permissions')
 @UseGuards(AuthGuard, PermissionsGuard)
 @ApiBearerAuth()
-@Validator(permissionsValidator({permissions: 'id'}))
 export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a permission' })
   @ApiResponse({ status: 201, description: 'Permission created successfully', type: PermissionDto })
+  @Validator(permissionsValidator({permissions: 'id'}, ['create']))
   create(@Body() createPermissionDto: CreatePermissionDto) {
     return this.permissionsService.create(createPermissionDto);
   }
@@ -28,14 +28,16 @@ export class PermissionsController {
   @Get()
   @ApiOperation({ summary: 'Get all permissions' })
   @ApiResponse({ status: 200, description: 'Permissions retrieved successfully', type: [PermissionDto] })
+  @Validator(permissionsValidator({permissions: 'id'}, ['read']))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.permissionsService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.permissionsService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a permission' })
   @ApiResponse({ status: 200, description: 'Permission retrieved successfully', type: PermissionDto })
+  @Validator(permissionsValidator({permissions: 'id'}, ['read']))
   findOne(@Param('id') id: string) {
     return this.permissionsService.findOne(id);
   }
@@ -43,6 +45,7 @@ export class PermissionsController {
   @Patch(':id')
   @ApiOperation({ summary: 'Update a permission' })
   @ApiResponse({ status: 200, description: 'Permission updated successfully', type: PermissionDto })
+  @Validator(permissionsValidator({permissions: 'id'}, ['update']))
   update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
     return this.permissionsService.update(id, updatePermissionDto);
   }
@@ -50,6 +53,7 @@ export class PermissionsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a permission' })
   @ApiResponse({ status: 200, description: 'Permission deleted successfully', type: PermissionDto })
+  @Validator(permissionsValidator({permissions: 'id'}, ['delete']))
   remove(@Param('id') id: string) {
     return this.permissionsService.remove(id);
   }

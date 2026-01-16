@@ -26,6 +26,8 @@ export default class PermissionsValidator {
     : paramsIds;
     if (ids.length > systems.length) ids = ids.slice(0, systems.length);
 
+    console.log({systems, ids, actions: this.actions});
+
     return this.actions.every(action => 
       this.permissionsEvaluator.evaluate(
         permissions,

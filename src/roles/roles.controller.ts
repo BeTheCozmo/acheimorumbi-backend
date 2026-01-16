@@ -29,8 +29,8 @@ export class RolesController {
   @ApiResponse({status: 200, description: "Roles response", type: [CreateRoleDto]})
   @Validator(permissionsValidator({roles: "id"}, ['read']))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.rolesService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.rolesService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':id')

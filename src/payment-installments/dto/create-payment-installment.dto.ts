@@ -1,6 +1,6 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from "@nestjs/class-validator";
-import { PaymentInstallmentsType } from "../enums/payment-installments-type.enum";
 import { ApiProperty } from "@nestjs/swagger";
+import { PaymentInstallmentsType } from "@prisma/client";
 
 export class CreatePaymentInstallmentDto  {
 	@ApiProperty()

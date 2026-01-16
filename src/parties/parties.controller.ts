@@ -27,8 +27,8 @@ export class PartiesController {
   @UseGuards(AuthGuard, PermissionsGuard)
   @Validator(permissionsValidator({contracts: "id", parties: "pid"}))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.partiesService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.partiesService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':pid')

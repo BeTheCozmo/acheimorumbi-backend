@@ -3,8 +3,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { CreateContractDto } from "./dto/create-contract.dto";
 import { UpdateContractDto } from "./dto/update-contract.dto";
 import { ContractStatus } from "./enums/contract-status";
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { CONTRACT_FILTER_CONFIG } from "./contracts.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { CONTRACT_CONFIG } from "./contracts.filter-config";
 
 @Injectable()
 export class ContractsRepository {
@@ -49,9 +49,16 @@ export class ContractsRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, CONTRACT_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, CONTRACT_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, CONTRACT_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.contract.findMany({
@@ -63,6 +70,7 @@ export class ContractsRepository {
           },
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.contract.count({
           where: removeMode(where)
@@ -148,6 +156,7 @@ export class ContractsRepository {
         },
         data: {
           ...updateContractDto,
+          checklistTitles: undefined,
           propertyId: updateContractDto.propertyId || undefined,
           realtors: updateContractDto.realtors ? {set: updateContractDto?.realtors.map(id => ({id}))} : undefined,
           paymentInstallments: {

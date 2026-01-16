@@ -22,6 +22,7 @@ import { ContractGeneratorModule } from './contract-generator/contract-generator
 import { PaymentInstallmentsModule } from './payment-installments/payment-installments.module';
 import { ForgotAccessModule } from './forgot-access/forgot-access.module';
 import { WitnessesModule } from './witnesses/witnesses.module';
+import { ConfigurationsModule } from './configurations/configurations.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { WitnessesModule } from './witnesses/witnesses.module';
     PaymentInstallmentsModule,
     ForgotAccessModule,
     WitnessesModule,
+    ConfigurationsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

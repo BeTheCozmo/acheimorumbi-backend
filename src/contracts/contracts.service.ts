@@ -5,15 +5,18 @@ import { ContractsRepository } from './contracts.repository';
 import { CodeGeneratorService } from '@modules/code-generator/code-generator.service';
 import { ChecklistTitlesService } from '@modules/checklist-titles/checklist-titles.service';
 import { PartyFormType } from '@modules/party-forms/enums/party-form-type.enum';
-import { Contract, Party, PartyInfo, Prisma } from '@prisma/client';
+import { Contract, Party, PartyInfo, PaymentInstallmentsType, Prisma } from '@prisma/client';
 import { PropertiesService } from '@modules/properties/properties.service';
 import { PartiesService } from '@modules/parties/parties.service';
 import { ContractGeneratorService } from '@modules/contract-generator/contract-generator.service';
 import { ContractContextService } from './contract-context.service';
 import { FormattedPartiesDto, FormattedPartyDto } from './dto/formatted-parties.dto';
 import { PaymentInstallmentsService } from '@modules/payment-installments/payment-installments.service';
-import { PaymentInstallmentsType } from './dto/payment-installments.dto';
+import { PaymentInstallmentsDto } from './dto/payment-installments.dto';
 import { PaginatedResponse } from 'src/common/interfaces/paginated-response.interface';
+import { ContractType } from './enums/contract-type';
+import { ContractWithInstallments } from './dto/contract-with-installments.dto';
+import { CreatePaymentInstallmentDto } from '@modules/payment-installments/dto/create-payment-installment.dto';
 
 @Injectable()
 export class ContractsService {
@@ -51,13 +54,26 @@ export class ContractsService {
     return contractCreated;
   }
 
-  async findAll(filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+  async findAll(
+    filters?: Record<string, any>,
+    limit?: number,
+    offset?: number,
+    page?: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ): Promise<any[] | PaginatedResponse<any>> {
     const hasFilters = filters && Object.keys(filters).length > 0;
     const actualLimit = Number(limit) || 10;
     const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
 
-    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
-      const { data, total } = await this.contractsRepository.findAllFiltered(filters || {}, actualLimit, actualOffset);
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined || orderBy !== undefined) {
+      const { data, total } = await this.contractsRepository.findAllFiltered(
+        filters || {},
+        actualLimit,
+        actualOffset,
+        orderBy,
+        order
+      );
 
       return {
         data,
@@ -70,8 +86,62 @@ export class ContractsService {
     return this.contractsRepository.findAll();
   }
 
-  findOne(id: number) {
-    return this.contractsRepository.findOne(id);
+  async findOne(id: number) {
+    const contract = await this.contractsRepository.findOne(id);
+    if(!contract) return contract;
+
+    await this.updateInstallments(contract as ContractWithInstallments);
+    return contract;
+  }
+
+  private async updateInstallments(contract: ContractWithInstallments) {
+    switch (contract.type) {
+      case ContractType.SALE:
+        await this.updateInstallmentsForSale(contract);
+        break;
+      case ContractType.LEASE:
+        await this.updateInstallmentsForLease(contract);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private async updateInstallmentsForSale(contract: ContractWithInstallments) {
+    if(!contract?.paymentInstallments.length) return;
+    const { paymentInstallments } = contract;
+    for (const installment of paymentInstallments) {
+      switch (installment.type) {
+        case PaymentInstallmentsType.COMISSION:
+          await this.fixComissionInstallment(contract, {...installment, paidAt: installment.paidAt ? new Date(installment.paidAt).toString() : undefined});
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  private async updateInstallmentsForLease(contract: ContractWithInstallments) {
+    if(!contract?.paymentInstallments.length) return;
+    const { paymentInstallments } = contract;
+    for (const installment of paymentInstallments) {
+      switch (installment.type) {
+        case PaymentInstallmentsType.SIGNAL:
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  private async fixComissionInstallment(contract: ContractWithInstallments, installment: PaymentInstallmentsDto) {
+    if(installment.type !== PaymentInstallmentsType.COMISSION) return;
+    await this.paymentInstallmentsService.update(installment.id, {
+      ...installment,
+      value: contract.value * (contract.intermediationPercentage / 100),
+      paidAt: installment.paidAt ? new Date (installment.paidAt) : undefined,
+      type: installment.type
+    });
   }
 
   update(id: number, updateContractDto: UpdateContractDto) {
@@ -98,7 +168,9 @@ export class ContractsService {
 
   async generateFile(contract: Contract) {
     const property = await this.propertiesService.findOne(contract.propertyId);
-    console.log({ property });
+    const {isPropertyFullFilled, fieldsNotFilled} = await this.propertiesService.checkPropertyFullFilled(contract.propertyId);
+    console.log({ property, isPropertyFullFilled, fieldsNotFilled });
+    if(!isPropertyFullFilled) throw new HttpException({property: fieldsNotFilled}, HttpStatus.FAILED_DEPENDENCY);
     const parties = await this.partiesService.findManyByContractId(contract.id);
     const formattedParties: FormattedPartiesDto = this.formatParties(parties);
     console.log({ formattedParties });

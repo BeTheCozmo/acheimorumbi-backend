@@ -21,8 +21,8 @@ export class UserEventsController {
   @Get()
   @Validator(permissionsValidator({'user-events': 'id'}, ["read"]))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.userEventsService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.userEventsService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get('user/:uid')

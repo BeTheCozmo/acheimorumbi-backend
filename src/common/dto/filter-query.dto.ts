@@ -1,4 +1,4 @@
-import { IsOptional, IsInt, Min } from 'class-validator';
+import { IsOptional, IsInt, Min, IsString, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -23,4 +23,22 @@ export class FilterQueryDto {
   @IsInt()
   @Min(1)
   page?: number;
+
+  @ApiPropertyOptional({
+    description: 'Campo para ordenação (ex: name, createdAt)',
+    example: 'name'
+  })
+  @IsOptional()
+  @IsString()
+  orderBy?: string;
+
+  @ApiPropertyOptional({
+    description: 'Direção da ordenação',
+    enum: ['asc', 'desc'],
+    default: 'asc'
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  order?: 'asc' | 'desc';
 }

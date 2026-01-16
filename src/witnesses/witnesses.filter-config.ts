@@ -1,7 +1,21 @@
-import { FilterMode, FieldFilterConfig } from 'src/common/utils/prisma-filter.util';
+import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
 
-export const WITNESS_FILTER_CONFIG: FieldFilterConfig = {
-  name: FilterMode.CONTAINS,
-  rg: FilterMode.EXACT,
-  signature: FilterMode.EXACT,
+/**
+ * Configuração completa para o modelo Witness
+ *
+ * - filterConfig: Define como cada campo deve ser filtrado (CONTAINS ou EXACT)
+ * - sortableFields: Lista de campos permitidos para ordenação
+ */
+export const WITNESS_CONFIG: ModelConfig = {
+  filterConfig: {
+    name: FilterMode.CONTAINS,
+    rg: FilterMode.EXACT,
+    signature: FilterMode.EXACT,
+  },
+  sortableFields: [
+    'id',
+    'name',
+    'rg',
+    'signature',
+  ],
 };

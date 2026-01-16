@@ -4,8 +4,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Role, User } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { USER_FILTER_CONFIG } from "./users.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { USER_CONFIG } from "./users.filter-config";
 
 @Injectable()
 export class UsersRepository {
@@ -56,9 +56,16 @@ export class UsersRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, USER_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, USER_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, USER_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.user.findMany({
@@ -70,6 +77,7 @@ export class UsersRepository {
           },
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.user.count({
           where: removeMode(where)

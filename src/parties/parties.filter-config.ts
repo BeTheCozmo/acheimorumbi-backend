@@ -1,6 +1,22 @@
-import { FilterMode, FieldFilterConfig } from 'src/common/utils/prisma-filter.util';
+import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
 
-export const PARTY_FILTER_CONFIG: FieldFilterConfig = {
-  code: FilterMode.EXACT,
-  type: FilterMode.EXACT,
+/**
+ * Configuração completa para o modelo Party
+ *
+ * - filterConfig: Define como cada campo deve ser filtrado (CONTAINS ou EXACT)
+ * - sortableFields: Lista de campos permitidos para ordenação
+ */
+export const PARTY_CONFIG: ModelConfig = {
+  filterConfig: {
+    code: FilterMode.EXACT,
+    type: FilterMode.EXACT,
+  },
+  sortableFields: [
+    'id',
+    'code',
+    'type',
+    'contractId',
+    'createdAt',
+    'updatedAt',
+  ],
 };

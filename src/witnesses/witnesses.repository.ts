@@ -2,8 +2,8 @@ import { PrismaService } from "@modules/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { CreateWitnessDto } from "./dto/create-witness.dto";
 import { UpdateWitnessDto } from "./dto/update-witness.dto";
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { WITNESS_FILTER_CONFIG } from "./witnesses.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { WITNESS_CONFIG } from "./witnesses.filter-config";
 
 @Injectable()
 export class WitnessesRepository {
@@ -31,15 +31,23 @@ export class WitnessesRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, WITNESS_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, WITNESS_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, WITNESS_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.witness.findMany({
           where,
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.witness.count({
           where: removeMode(where)

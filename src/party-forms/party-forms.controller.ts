@@ -34,8 +34,8 @@ export class PartyFormsController {
   @UseGuards(AuthGuard, PermissionsGuard)
   @Validator(permissionsValidator({"party-forms": "id"}, ['read']))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.partyFormsService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.partyFormsService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':id')

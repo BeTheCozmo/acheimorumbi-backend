@@ -58,11 +58,12 @@ export class UsersService {
     const saltRounds = parseInt(this.configService.get<string>('BCRYPT_SALT_ROUNDS') || '13', 10);
     const role = await this.rolesService.findOne(createUserDto.roleId);
     if (!role) throw new HttpException(`cargo ${createUserDto.roleId} não encontrado`, HttpStatus.NOT_FOUND);
+    
     const password = this.codeGeneratorService.generateRandomString(12);
     const createdUser = await this.userRepository.create({
       ...createUserDto,
       password: await bcrypt.hash(password, saltRounds),
-      roleId: RolesEnum.USER,
+      roleId: createUserDto.roleId,
     });
     if (!createdUser) throw new HttpException(`Erro ao criar usuário`, HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -83,13 +84,26 @@ export class UsersService {
     return await this.usersMailer.notifyUserCreated(data);
   }
 
-  async findAll(filters?: Record<string, any>, limit?: number, offset?: number, page?: number): Promise<any[] | PaginatedResponse<any>> {
+  async findAll(
+    filters?: Record<string, any>,
+    limit?: number,
+    offset?: number,
+    page?: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ): Promise<any[] | PaginatedResponse<any>> {
     const hasFilters = filters && Object.keys(filters).length > 0;
     const actualLimit = Number(limit) || 10;
     const actualOffset = page ? (Number(page) - 1) * actualLimit : (Number(offset) || 0);
 
-    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined) {
-      const { data, total } = await this.userRepository.findAllFiltered(filters || {}, actualLimit, actualOffset);
+    if (hasFilters || limit !== undefined || offset !== undefined || page !== undefined || orderBy !== undefined) {
+      const { data, total } = await this.userRepository.findAllFiltered(
+        filters || {},
+        actualLimit,
+        actualOffset,
+        orderBy,
+        order
+      );
 
       const mappedData = data.map(user => ({
         id: user.id,

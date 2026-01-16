@@ -66,6 +66,16 @@ export const masterPermissions = [
   "user-events:*:update",
   "user-events:*:delete",
 
+  "configurations:*:create",
+  "configurations:*:read",
+  "configurations:*:update",
+  "configurations:*:delete",
+
+  "witnesses:*:create",
+  "witnesses:*:read",
+  "witnesses:*:update",
+  "witnesses:*:delete",
+
   "auth:*:update_password"
 ];
 export const commonUserPermissions = [

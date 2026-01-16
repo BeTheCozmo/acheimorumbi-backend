@@ -27,6 +27,7 @@ export class PermissionsGuard implements CanActivate {
     const allPermissions = Array.from(new Set<string>([...rolePermissions, ...userPermissions]));
     
     console.log({params: JSON.stringify(req.params, null, 2), method: req.method});
+    console.log({allPermissions})
     if (!validator.validate(allPermissions, Object.keys(req.params).map(k => req.params[k])))
       throw new HttpException('Você não possui permissão para acessar este recurso', HttpStatus.UNAUTHORIZED);
     else return true;

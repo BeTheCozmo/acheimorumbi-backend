@@ -1,6 +1,22 @@
-import { FilterMode, FieldFilterConfig } from 'src/common/utils/prisma-filter.util';
+import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
 
-export const DOCUMENT_FILTER_CONFIG: FieldFilterConfig = {
-  name: FilterMode.CONTAINS,
-  url: FilterMode.EXACT,
+/**
+ * Configuração completa para o modelo Document
+ *
+ * - filterConfig: Define como cada campo deve ser filtrado (CONTAINS ou EXACT)
+ * - sortableFields: Lista de campos permitidos para ordenação
+ */
+export const DOCUMENT_CONFIG: ModelConfig = {
+  filterConfig: {
+    name: FilterMode.CONTAINS,
+    url: FilterMode.EXACT,
+  },
+  sortableFields: [
+    'id',
+    'name',
+    'url',
+    'contractId',
+    'createdAt',
+    'updatedAt',
+  ],
 };

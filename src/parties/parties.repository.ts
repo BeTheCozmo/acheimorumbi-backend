@@ -4,8 +4,8 @@ import { CreatePartyDto } from "./dto/create-party.dto";
 import { UpdatePartyDto } from "./dto/update-party.dto";
 import { Prisma } from "@prisma/client";
 import { PartyType } from "./dto/party-type.dto";
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { PARTY_FILTER_CONFIG } from "./parties.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { PARTY_CONFIG } from "./parties.filter-config";
 
 @Injectable()
 export class PartiesRepository {
@@ -55,15 +55,23 @@ export class PartiesRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, PARTY_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, PARTY_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, PARTY_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.party.findMany({
           where,
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.party.count({
           where: removeMode(where)

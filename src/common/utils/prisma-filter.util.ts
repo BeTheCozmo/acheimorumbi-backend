@@ -9,6 +9,11 @@ export enum FilterMode {
 
 export type FieldFilterConfig = Record<string, FilterMode>;
 
+export interface ModelConfig {
+  filterConfig: FieldFilterConfig;
+  sortableFields: string[];  // Campos permitidos para ordenação
+}
+
 /**
  * Cria um objeto where do Prisma baseado nos filtros fornecidos
  * Usa a configuração de campos para determinar se usa busca por substring (contains) ou exata
@@ -53,6 +58,38 @@ export function buildPrismaWhere(filters: Record<string, any>, fieldConfig: Fiel
   });
 
   return where;
+}
+
+/**
+ * Constrói o objeto orderBy do Prisma baseado nos parâmetros de ordenação
+ *
+ * @param orderBy - Campo a ser ordenado
+ * @param order - Direção da ordenação (asc ou desc)
+ * @param sortableFields - Lista de campos permitidos para ordenação
+ * @returns Objeto orderBy do Prisma ou undefined se inválido
+ *
+ * @example
+ * const orderByObj = buildPrismaOrderBy('name', 'asc', ['name', 'email', 'createdAt']);
+ * // Retorna: { name: 'asc' }
+ */
+export function buildPrismaOrderBy(
+  orderBy?: string,
+  order?: 'asc' | 'desc',
+  sortableFields?: string[]
+): any {
+  if (!orderBy || !sortableFields) {
+    return undefined;
+  }
+
+  // Validar se o campo é permitido para ordenação
+  if (!sortableFields.includes(orderBy)) {
+    console.warn(`Campo "${orderBy}" não é permitido para ordenação. Campos permitidos: ${sortableFields.join(', ')}`);
+    return undefined;
+  }
+
+  const direction = order || 'asc';
+
+  return { [orderBy]: direction };
 }
 
 /**

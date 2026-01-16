@@ -3,8 +3,8 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { Permission, Prisma, Role } from '@prisma/client';
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { ROLE_FILTER_CONFIG } from "./roles.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { ROLE_CONFIG } from "./roles.filter-config";
 
 @Injectable()
 export class RolesRepository {
@@ -12,9 +12,9 @@ export class RolesRepository {
     private prismaService: PrismaService,
   ) {}
 
-  create(createRolesDto: CreateRoleDto) {
+  async create(createRolesDto: CreateRoleDto) {
     try {
-      return this.prismaService.role.create({
+      return await this.prismaService.role.create({
         data: {
           ...createRolesDto,
           permissions: {
@@ -30,9 +30,9 @@ export class RolesRepository {
     }
   }
 
-  findAll() {
+  async findAll() {
     try {
-      return this.prismaService.role.findMany({
+      return await this.prismaService.role.findMany({
         include: { permissions: true },
       });
     } catch (error) {
@@ -40,9 +40,16 @@ export class RolesRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, ROLE_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, ROLE_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, ROLE_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.role.findMany({
@@ -50,6 +57,7 @@ export class RolesRepository {
           include: { permissions: true },
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.role.count({
           where: removeMode(where)
@@ -63,9 +71,9 @@ export class RolesRepository {
     }
   }
 
-  findOne(name: string) {
+  async findOne(name: string) {
     try {
-      return this.prismaService.role.findUnique({
+      return await this.prismaService.role.findUnique({
         where: { name },
         include: { permissions: true },
       });
@@ -74,9 +82,9 @@ export class RolesRepository {
     }
   }
 
-  findOneByName(name: string) {
+  async findOneByName(name: string) {
     try {
-      return this.prismaService.role.findUnique({
+      return await this.prismaService.role.findUnique({
         where: { name },
         include: { permissions: true },
       });
@@ -85,9 +93,9 @@ export class RolesRepository {
     }
   }
 
-  update(name: string, updateRolesDto: UpdateRoleDto) {
+  async update(name: string, updateRolesDto: UpdateRoleDto) {
     try {
-      return this.prismaService.role.update({
+      return await this.prismaService.role.update({
         where: { name },
         data: {
           ...updateRolesDto,
@@ -104,9 +112,9 @@ export class RolesRepository {
     }
   }
 
-  remove(name: string) {
+  async remove(name: string) {
     try {
-      return this.prismaService.role.delete({
+      return await this.prismaService.role.delete({
         where: { name },
       });
     } catch (error) {

@@ -2,8 +2,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePropertyDto } from "./dto/create-property.dto";
 import { UpdatePropertyDto } from "./dto/update-property.dto";
-import { buildPrismaWhere, removeMode } from "src/common/utils/prisma-filter.util";
-import { PROPERTY_FILTER_CONFIG } from "./properties.filter-config";
+import { buildPrismaWhere, buildPrismaOrderBy, removeMode } from "src/common/utils/prisma-filter.util";
+import { PROPERTY_CONFIG } from "./properties.filter-config";
 
 @Injectable()
 export class PropertiesRepository {
@@ -35,9 +35,16 @@ export class PropertiesRepository {
     }
   }
 
-  async findAllFiltered(filters: Record<string, any>, limit: number, offset: number) {
+  async findAllFiltered(
+    filters: Record<string, any>,
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: 'asc' | 'desc'
+  ) {
     try {
-      const where = buildPrismaWhere(filters, PROPERTY_FILTER_CONFIG);
+      const where = buildPrismaWhere(filters, PROPERTY_CONFIG.filterConfig);
+      const orderByClause = buildPrismaOrderBy(orderBy, order, PROPERTY_CONFIG.sortableFields);
 
       const [data, total] = await Promise.all([
         this.prismaService.property.findMany({
@@ -45,6 +52,7 @@ export class PropertiesRepository {
           include: {referrer: true},
           take: limit,
           skip: offset,
+          orderBy: orderByClause,
         }),
         this.prismaService.property.count({
           where: removeMode(where)

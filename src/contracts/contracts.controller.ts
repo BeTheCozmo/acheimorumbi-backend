@@ -29,8 +29,8 @@ export class ContractsController {
   @ApiResponse({ type: ContractDto, isArray: true })
   @Validator(permissionsValidator({contracts: "id"}, ["read"]))
   findAll(@Query() query: FilterQueryDto & Record<string, any>) {
-    const { limit, offset, page, ...filters } = query;
-    return this.contractsService.findAll(filters, limit, offset, page);
+    const { limit, offset, page, orderBy, order, ...filters } = query;
+    return this.contractsService.findAll(filters, limit, offset, page, orderBy, order);
   }
 
   @Get(':id')

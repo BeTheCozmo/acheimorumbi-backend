@@ -1,5 +1,16 @@
-import { FilterMode, FieldFilterConfig } from 'src/common/utils/prisma-filter.util';
+import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
 
-export const PARTY_FORM_FILTER_CONFIG: FieldFilterConfig = {
-  type: FilterMode.EXACT,
+/**
+ * Configuração completa para o modelo PartyForm
+ *
+ * - filterConfig: Define como cada campo deve ser filtrado (CONTAINS ou EXACT)
+ * - sortableFields: Lista de campos permitidos para ordenação
+ */
+export const PARTY_FORM_CONFIG: ModelConfig = {
+  filterConfig: {
+    type: FilterMode.EXACT,
+  },
+  sortableFields: [
+    'type',
+  ],
 };
