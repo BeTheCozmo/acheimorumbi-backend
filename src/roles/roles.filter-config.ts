@@ -8,7 +8,7 @@ import { FilterMode, ModelConfig } from 'src/common/utils/prisma-filter.util';
  */
 export const ROLE_CONFIG: ModelConfig = {
   filterConfig: {
-    name: FilterMode.EXACT, // Nome de role geralmente é exato
+    name: FilterMode.CONTAINS, // Nome de role geralmente é exato
   },
   sortableFields: [
     'name',
